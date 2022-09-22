@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv(verbose=True)
 
-APP_NAME = "SCP"
+APP_NAME = "TRAINER"
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 FLASK_CONFIG = os.getenv('FLASK_CONFIG') or 'development'
 
