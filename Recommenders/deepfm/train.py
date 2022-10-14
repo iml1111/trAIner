@@ -13,6 +13,7 @@ load_dotenv(verbose=True)
 
 KMRD_LARGE_DATA_PATH=os.environ['KMRD_LARGE_DATA_PATH']
 KMRD_SMALL_DATA_PATH=os.environ['KMRD_SMALL_DATA_PATH']
+KMRD_SUPER_LARGE_DATA_PATH=os.environ['KMRD_SUPER_LARGE_DATA_PATH']
 
 
 def define_argparser():
@@ -25,7 +26,7 @@ def define_argparser():
     )
     p.add_argument(
         '--data_path',
-        default=KMRD_SMALL_DATA_PATH,
+        default=KMRD_LARGE_DATA_PATH,
         help='Dataset Path, Default=%(default)s'
     )
     p.add_argument(
@@ -43,7 +44,7 @@ def define_argparser():
     p.add_argument(
         '--embed_dim',
         type=int,
-        default=100,
+        default=16,
         help='Embedding Vector Size. Default=%(default)s'
     )
     p.add_argument(
