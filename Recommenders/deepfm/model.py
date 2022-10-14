@@ -54,13 +54,14 @@ class FactorizationMachine(torch.nn.Module):
 
 class MultiLayerPerceptron(torch.nn.Module):
 
-    def __init__(self, input_dim, embed_dims, output_layer=True):
+    def __init__(self, input_dim, embed_dims, dropout, output_layer=True):
         super().__init__()
         layers = list()
         for embed_dim in embed_dims:
             layers.append(torch.nn.Linear(input_dim, embed_dim))
-            layers.append(torch.nn.ReLU())
             layers.append(torch.nn.BatchNorm1d(embed_dim))
+            layers.append(torch.nn.ReLU())
+            layers.append(torch.nn.Dropout(p=dropout))
             input_dim = embed_dim
         if output_layer:
             layers.append(torch.nn.Linear(input_dim, 1))
@@ -80,13 +81,13 @@ class DeepFactorizationMachineModel(torch.nn.Module):
         H Guo, et al. DeepFM: A Factorization-Machine based Neural Network for CTR Prediction, 2017.
     """
 
-    def __init__(self, field_dims, embed_dim, mlp_dims):
+    def __init__(self, field_dims, embed_dim, mlp_dims, dropout):
         super().__init__()
         self.linear = FeaturesLinear(field_dims)
         self.fm = FactorizationMachine(reduce_sum=True)
         self.embedding = FeaturesEmbedding(field_dims, embed_dim)
         self.embed_output_dim = len(field_dims) * embed_dim
-        self.mlp = MultiLayerPerceptron(self.embed_output_dim, mlp_dims)
+        self.mlp = MultiLayerPerceptron(self.embed_output_dim, mlp_dims, dropout=dropout)
 
     def forward(self, x):
         """

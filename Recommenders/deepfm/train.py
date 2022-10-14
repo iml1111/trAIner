@@ -11,9 +11,9 @@ from dotenv import load_dotenv
 
 load_dotenv(verbose=True)
 
-KMRD_LARGE_DATA_PATH=os.environ['KMRD_LARGE_DATA_PATH']
-KMRD_SMALL_DATA_PATH=os.environ['KMRD_SMALL_DATA_PATH']
-KMRD_SUPER_LARGE_DATA_PATH=os.environ['KMRD_SUPER_LARGE_DATA_PATH']
+KMRD_LARGE_DATA_PATH = os.environ['KMRD_LARGE_DATA_PATH']
+KMRD_SMALL_DATA_PATH = os.environ['KMRD_SMALL_DATA_PATH']
+KMRD_SUPER_LARGE_DATA_PATH = os.environ['KMRD_SUPER_LARGE_DATA_PATH']
 
 
 def define_argparser():
@@ -26,7 +26,7 @@ def define_argparser():
     )
     p.add_argument(
         '--data_path',
-        default=KMRD_LARGE_DATA_PATH,
+        default=KMRD_SMALL_DATA_PATH,
         help='Dataset Path, Default=%(default)s'
     )
     p.add_argument(
@@ -44,14 +44,20 @@ def define_argparser():
     p.add_argument(
         '--embed_dim',
         type=int,
-        default=16,
+        default=32,
         help='Embedding Vector Size. Default=%(default)s'
     )
     p.add_argument(
         '--mlp_dims',
         type=list,
-        default=[16, 16, 16],
+        default=[64, 32, 16],
         help='MultiLayerPerceptron Layers size. Default=%(default)s'
+    )
+    p.add_argument(
+        '--dropout',
+        type=float,
+        default=0.4,
+        help='Dropout. Default=%(default)s'
     )
     p.add_argument(
         '--train_ratio',
@@ -93,7 +99,8 @@ def main(config):
     model = DeepFactorizationMachineModel(
         dataset.user_movie_cnts,
         config.embed_dim,
-        config.mlp_dims
+        config.mlp_dims,
+        config.dropout,
     ).to(device)
     optimizer = optim.Adam(params=model.parameters(), lr=0.001, weight_decay=1e-6)
     crit = nn.BCELoss().to(device)
