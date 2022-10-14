@@ -44,7 +44,7 @@ def define_argparser():
     p.add_argument(
         '--embed_dim',
         type=int,
-        default=32,
+        default=1024,
         help='Embedding Vector Size. Default=%(default)s'
     )
     p.add_argument(
@@ -56,19 +56,19 @@ def define_argparser():
     p.add_argument(
         '--dropout',
         type=float,
-        default=0.4,
+        default=0.2,
         help='Dropout. Default=%(default)s'
     )
     p.add_argument(
         '--train_ratio',
         type=float,
-        default=0.8,
+        default=0.7,
         help='Train data ratio. Default=%(default)s'
     )
     p.add_argument(
         '--valid_ratio',
         type=float,
-        default=0.1,
+        default=0.15,
         help='Valid data ratio. Default=%(default)s'
     )
     config = p.parse_args()
@@ -90,8 +90,8 @@ def main(config):
             dataset, (train_size, valid_size, test_size)
         )
     )
-    print("Train:", train_size)
-    print("Valid:", valid_size)
+    print(f"Users: {dataset.user_cnt}, Items: {dataset.movie_cnt}")
+    print("Train:", train_size, "Valid:", valid_size, "Test:", test_size)
 
     train_data_loader = DataLoader(train_dataset, batch_size=config.batch_size)
     valid_data_loader = DataLoader(valid_dataset, batch_size=config.batch_size)
@@ -102,6 +102,8 @@ def main(config):
         config.mlp_dims,
         config.dropout,
     ).to(device)
+    print(model)
+
     optimizer = optim.Adam(params=model.parameters(), lr=0.001, weight_decay=1e-6)
     crit = nn.BCELoss().to(device)
 

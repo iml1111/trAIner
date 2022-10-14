@@ -15,8 +15,14 @@ class KMRDDataset(Dataset):
         data = data.to_numpy()[:, :3]  # (data_num, 3)
 
         self.x = data[:, :2].astype(np.int)
-        self.y = self._preprocess_target(data[:, 2:]).astype(np.float32)
+        self.y = self._preprocess_target(data[:, 2]).astype(np.float32)
+
+        #print(len(self.y[self.y == 1.0]), len(self.y[self.y == 0]))
+        #raise RuntimeError("as")
+
+        self.y = np.expand_dims(self.y, axis=1)
         self.user_movie_cnts = np.max(self.x, axis=0) + 1
+        self.user_cnt, self.movie_cnt = self.user_movie_cnts
 
         self.user_field_idx = np.array((0,), dtype=np.long)
         self.movie_field_idx = np.array((1,), dtype=np.long)
@@ -28,6 +34,6 @@ class KMRDDataset(Dataset):
         return self.x[index], self.y[index]
 
     def _preprocess_target(self, target):
-        target[target <= 7] = 0
-        target[target > 7] = 1
+        target[target <= 9] = 0
+        target[target > 9] = 1
         return target
