@@ -5,15 +5,16 @@ import torch
 from torch import optim
 import torch.nn as nn
 from model import DeepFactorizationMachineModel
-from data_loader import KMRDDataset, DataLoader
+from data_loader import KMRDDataset, DataLoader, TrainerDatasetV1
 from trainer import Trainer
 from dotenv import load_dotenv
 
 load_dotenv(verbose=True)
 
-KMRD_LARGE_DATA_PATH = os.environ['KMRD_LARGE_DATA_PATH']
-KMRD_SMALL_DATA_PATH = os.environ['KMRD_SMALL_DATA_PATH']
-KMRD_SUPER_LARGE_DATA_PATH = os.environ['KMRD_SUPER_LARGE_DATA_PATH']
+KMRD_LARGE_DATA_PATH = os.getenv('KMRD_LARGE_DATA_PATH')
+KMRD_SMALL_DATA_PATH = os.getenv('KMRD_SMALL_DATA_PATH')
+KMRD_SUPER_LARGE_DATA_PATH = os.getenv('KMRD_SUPER_LARGE_DATA_PATH')
+TRAINER_DATA_PATH_V1 = os.getenv('TRAINER_DATA_PATH_V1')
 
 
 def define_argparser():
@@ -26,7 +27,7 @@ def define_argparser():
     )
     p.add_argument(
         '--data_path',
-        default=KMRD_SMALL_DATA_PATH,
+        default=TRAINER_DATA_PATH_V1,
         help='Dataset Path, Default=%(default)s'
     )
     p.add_argument(
@@ -80,7 +81,10 @@ def main(config):
     pprint(vars(config))
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    dataset = KMRDDataset(config.data_path)
+    if 'kmrd' in config.data_path:
+        dataset = KMRDDataset(config.data_path)
+    elif 'v1' in config.data_path:
+        dataset = TrainerDatasetV1(config.data_path)
 
     train_size = int(len(dataset) * config.train_ratio)
     valid_size = int(len(dataset) * config.valid_ratio)
