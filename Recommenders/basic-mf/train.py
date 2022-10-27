@@ -1,6 +1,7 @@
 import argparse
 from pprint import pprint
 from util import get_movielens, make_sparse_matrix
+from util import get_trainer_dataset, make_trainer_matrix
 from model import SGD
 
 
@@ -15,7 +16,7 @@ def define_argparser():
     p.add_argument(
         '--n_epochs',
         type=int,
-        default=200,
+        default=10,
         help='num of Iterations'
     )
     p.add_argument(
@@ -41,9 +42,15 @@ def define_argparser():
 
 def main(config):
     pprint(vars(config))
-    ratings_df = get_movielens('ratings.csv')
+    
+    #ratings_df = get_movielens('ratings.csv')
+    ratings_df = get_trainer_dataset()
+    
     print("Rating set shape:", ratings_df.shape)
-    sparse_matrix, test_set = make_sparse_matrix(ratings_df)
+    
+    #sparse_matrix, test_set = make_sparse_matrix(ratings_df)
+    sparse_matrix, test_set = make_trainer_matrix(ratings_df)
+    
     print("Sparse Matrix shape:", sparse_matrix.shape)
     print("Test set length:", len(test_set))
 
@@ -61,6 +68,14 @@ def main(config):
     trainer.train()
     print("train RMSE:", trainer.evaluate())
     print("test RMSE:", trainer.test_evaluate(test_set))
+
+    # 직접 눈으로 테스트 해봄
+    test_set = [
+        (0, 0, 1), (0, 1, 1), (0, 2, 1), (0, 4, 1), (0, 5, 1), (414, 531, 1), (414, 532, 1), (414, 533, 1), (414, 534, 1), (414, 535, 1),
+        (0, 0, 0), (0, 1, 0), (0, 2, 0), (0, 4, 0), (0, 5, 0),
+    ]
+    for i,j,_ in test_set:
+        print(trainer.predict(i, j))
 
 
 if __name__ == '__main__':

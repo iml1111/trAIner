@@ -15,6 +15,7 @@ KMRD_LARGE_DATA_PATH = os.getenv('KMRD_LARGE_DATA_PATH')
 KMRD_SMALL_DATA_PATH = os.getenv('KMRD_SMALL_DATA_PATH')
 KMRD_SUPER_LARGE_DATA_PATH = os.getenv('KMRD_SUPER_LARGE_DATA_PATH')
 TRAINER_DATA_PATH_V1 = os.getenv('TRAINER_DATA_PATH_V1')
+TRAINER_DATA_PATH_V2 = os.getenv('TRAINER_DATA_PATH_V2')
 
 
 def define_argparser():
@@ -27,7 +28,7 @@ def define_argparser():
     )
     p.add_argument(
         '--data_path',
-        default=TRAINER_DATA_PATH_V1,
+        default=TRAINER_DATA_PATH_V2,
         help='Dataset Path, Default=%(default)s'
     )
     p.add_argument(
@@ -45,19 +46,19 @@ def define_argparser():
     p.add_argument(
         '--embed_dim',
         type=int,
-        default=128,
+        default=1024,
         help='Embedding Vector Size. Default=%(default)s'
     )
     p.add_argument(
         '--mlp_dims',
         type=list,
-        default=[32, 16, 8],
+        default=[1024, 512, 256, 128, 64, 32, 16, 8],
         help='MultiLayerPerceptron Layers size. Default=%(default)s'
     )
     p.add_argument(
         '--dropout',
         type=float,
-        default=0.2,
+        default=0.3,
         help='Dropout. Default=%(default)s'
     )
     p.add_argument(
@@ -83,7 +84,9 @@ def main(config):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     if 'kmrd' in config.data_path:
         dataset = KMRDDataset(config.data_path)
-    elif 'v1' in config.data_path:
+    elif 'sparse_matrix_v1' in config.data_path:
+        dataset = TrainerDatasetV1(config.data_path)
+    elif 'sparse_matrix_v2' in config.data_path:
         dataset = TrainerDatasetV1(config.data_path)
 
     train_size = int(len(dataset) * config.train_ratio)
@@ -108,9 +111,15 @@ def main(config):
     ).to(device)
     print(model)
 
-    optimizer = optim.Adam(params=model.parameters(), lr=0.001, weight_decay=1e-6)
-    crit = nn.BCELoss().to(device)
+    #optimizer = optim.Adam(params=model.parameters(), lr=0.001, weight_decay=1e-6)
+    optimizer = optim.Adam(params=model.parameters())
 
+    if 'sparse_matrix_v2' in config.data_path:
+        crit = nn.MSELoss().to(device)
+    else:
+        crit = nn.BCELoss().to(device)
+
+    print(optimizer, crit)
     trainer = Trainer(model, optimizer, crit, device)
     trainer.train(train_data_loader, valid_data_loader, config)
 

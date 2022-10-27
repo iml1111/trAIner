@@ -71,4 +71,4 @@ class TrainerDatasetV1(Dataset):
 if __name__ == '__main__':
     data_path = "/mnt/c/Users/IML/Desktop/data/sparse_matrix_v1.csv"
     dataset = TrainerDatasetV1(data_path)
-    print(dataset[3])
+    print(dataset[0])
