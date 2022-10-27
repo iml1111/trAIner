@@ -45,13 +45,13 @@ def define_argparser():
     p.add_argument(
         '--embed_dim',
         type=int,
-        default=1024,
+        default=128,
         help='Embedding Vector Size. Default=%(default)s'
     )
     p.add_argument(
         '--mlp_dims',
         type=list,
-        default=[64, 32, 16],
+        default=[32, 16, 8],
         help='MultiLayerPerceptron Layers size. Default=%(default)s'
     )
     p.add_argument(
