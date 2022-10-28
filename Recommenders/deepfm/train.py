@@ -58,7 +58,7 @@ def define_argparser():
     p.add_argument(
         '--dropout',
         type=float,
-        default=0.3,
+        default=0.15,
         help='Dropout. Default=%(default)s'
     )
     p.add_argument(
@@ -111,8 +111,8 @@ def main(config):
     ).to(device)
     print(model)
 
-    #optimizer = optim.Adam(params=model.parameters(), lr=0.001, weight_decay=1e-6)
-    optimizer = optim.Adam(params=model.parameters())
+    optimizer = optim.Adam(params=model.parameters(), lr=0.001, weight_decay=1e-6)
+    #optimizer = optim.Adam(params=model.parameters())
 
     if 'sparse_matrix_v2' in config.data_path:
         crit = nn.MSELoss().to(device)

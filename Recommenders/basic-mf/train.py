@@ -1,8 +1,15 @@
-import argparse
+import argparse, os
 from pprint import pprint
 from util import get_movielens, make_sparse_matrix
 from util import get_trainer_dataset, make_trainer_matrix
 from model import SGD
+from dotenv import load_dotenv
+
+load_dotenv(verbose=True)
+
+TRAINER_DATA_PATH_V1=os.getenv('TRAINER_DATA_PATH_V1')
+TRAINER_DATA_PATH_V2=os.getenv('TRAINER_DATA_PATH_V2')
+
 
 
 def define_argparser():
@@ -12,6 +19,11 @@ def define_argparser():
         '--k',
         type=int,
         help='latent factor size.'
+    )
+    p.add_argument(
+        '--data_path',
+        default=TRAINER_DATA_PATH_V1,
+        help='Dataset Path, Default=%(default)s'
     )
     p.add_argument(
         '--n_epochs',
@@ -49,7 +61,7 @@ def main(config):
     print("Rating set shape:", ratings_df.shape)
     
     #sparse_matrix, test_set = make_sparse_matrix(ratings_df)
-    sparse_matrix, test_set = make_trainer_matrix(ratings_df)
+    sparse_matrix, test_set = make_trainer_matrix(config.data_path)
     
     print("Sparse Matrix shape:", sparse_matrix.shape)
     print("Test set length:", len(test_set))
@@ -68,14 +80,6 @@ def main(config):
     trainer.train()
     print("train RMSE:", trainer.evaluate())
     print("test RMSE:", trainer.test_evaluate(test_set))
-
-    # 직접 눈으로 테스트 해봄
-    test_set = [
-        (0, 0, 1), (0, 1, 1), (0, 2, 1), (0, 4, 1), (0, 5, 1), (414, 531, 1), (414, 532, 1), (414, 533, 1), (414, 534, 1), (414, 535, 1),
-        (0, 0, 0), (0, 1, 0), (0, 2, 0), (0, 4, 0), (0, 5, 0),
-    ]
-    for i,j,_ in test_set:
-        print(trainer.predict(i, j))
 
 
 if __name__ == '__main__':
