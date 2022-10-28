@@ -18,6 +18,7 @@ def define_argparser():
     p.add_argument(
         '--k',
         type=int,
+        default=512,
         help='latent factor size.'
     )
     p.add_argument(
@@ -46,6 +47,7 @@ def define_argparser():
     p.add_argument(
         '--sgd',
         action='store_true',
+        default=True,
         help='Use SGD Algorithm.'
     )
 
@@ -56,12 +58,12 @@ def main(config):
     pprint(vars(config))
     
     #ratings_df = get_movielens('ratings.csv')
-    ratings_df = get_trainer_dataset()
+    ratings_df = get_trainer_dataset(config.data_path)
     
     print("Rating set shape:", ratings_df.shape)
     
     #sparse_matrix, test_set = make_sparse_matrix(ratings_df)
-    sparse_matrix, test_set = make_trainer_matrix(config.data_path)
+    sparse_matrix, test_set = make_trainer_matrix(ratings_df)
     
     print("Sparse Matrix shape:", sparse_matrix.shape)
     print("Test set length:", len(test_set))
