@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 load_dotenv(verbose=True)
 
 TRAINER_DATA_PATH_V1=os.getenv('TRAINER_DATA_PATH_V1')
+TRAINER_DATA_PATH_V1_1=os.getenv('TRAINER_DATA_PATH_V1_1')
 TRAINER_DATA_PATH_V2=os.getenv('TRAINER_DATA_PATH_V2')
 
 
@@ -18,24 +19,24 @@ def define_argparser():
     p.add_argument(
         '--k',
         type=int,
-        default=512,
+        default=4096,
         help='latent factor size.'
     )
     p.add_argument(
         '--data_path',
-        default=TRAINER_DATA_PATH_V1,
+        default=TRAINER_DATA_PATH_V1_1,
         help='Dataset Path, Default=%(default)s'
     )
     p.add_argument(
         '--n_epochs',
         type=int,
-        default=10,
+        default=20,
         help='num of Iterations'
     )
     p.add_argument(
         '--lr',
         type=float,
-        default=0.01,
+        default=0.005,
         help='learning rate.'
     )
     p.add_argument(
@@ -71,6 +72,7 @@ def main(config):
     if config.sgd:
         trainer = SGD(
             sparse_matrix,
+            test_set,
             config.k,
             config.lr,
             config.beta,
@@ -82,6 +84,7 @@ def main(config):
     trainer.train()
     print("train RMSE:", trainer.evaluate())
     print("test RMSE:", trainer.test_evaluate(test_set))
+    trainer.test_ctr(test_set)
 
 
 if __name__ == '__main__':
