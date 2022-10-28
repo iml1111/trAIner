@@ -1,9 +1,9 @@
 import argparse, os
 from pprint import pprint
-from util import get_movielens, make_sparse_matrix
 from util import get_trainer_dataset, make_trainer_matrix
 from model import SGD
 from dotenv import load_dotenv
+import numpy as np
 
 load_dotenv(verbose=True)
 
@@ -25,6 +25,11 @@ def define_argparser():
     p.add_argument(
         '--data_path',
         default=TRAINER_DATA_PATH_V1_1,
+        help='Dataset Path, Default=%(default)s'
+    )
+    p.add_argument(
+        '--model_path',
+        default='ctr_model.npy',
         help='Dataset Path, Default=%(default)s'
     )
     p.add_argument(
@@ -85,6 +90,9 @@ def main(config):
     print("train RMSE:", trainer.evaluate())
     print("test RMSE:", trainer.test_evaluate(test_set))
     trainer.test_ctr(test_set)
+
+    pred_matrix = trainer.get_pred_matrix()
+    np.save(config.model_path, pred_matrix)
 
 
 if __name__ == '__main__':

@@ -60,7 +60,7 @@ def make_trainer_matrix(df):
     indice = list(zip(idx, jdx))
     np.random.shuffle(indice)
 
-    for i, j in indice[:df.shape[0] // 5]:
+    for i, j in indice[:df.shape[0] // 9]:
         test_set.append((i, j, sparse_matrix.iloc[i, j]))
         sparse_matrix.iloc[i, j] = 0
 
