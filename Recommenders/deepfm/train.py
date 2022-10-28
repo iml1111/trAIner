@@ -5,7 +5,10 @@ import torch
 from torch import optim
 import torch.nn as nn
 from model import DeepFactorizationMachineModel
-from data_loader import KMRDDataset, DataLoader, TrainerDatasetV1
+from data_loader import (
+    KMRDDataset, DataLoader, 
+    TrainerDatasetV1, TrainerDatasetV3
+)
 from trainer import Trainer
 from dotenv import load_dotenv
 
@@ -16,6 +19,7 @@ KMRD_SMALL_DATA_PATH = os.getenv('KMRD_SMALL_DATA_PATH')
 KMRD_SUPER_LARGE_DATA_PATH = os.getenv('KMRD_SUPER_LARGE_DATA_PATH')
 TRAINER_DATA_PATH_V1 = os.getenv('TRAINER_DATA_PATH_V1')
 TRAINER_DATA_PATH_V2 = os.getenv('TRAINER_DATA_PATH_V2')
+TRAINER_DATA_PATH_V3 = os.getenv('TRAINER_DATA_PATH_V3')
 
 
 def define_argparser():
@@ -28,7 +32,7 @@ def define_argparser():
     )
     p.add_argument(
         '--data_path',
-        default=TRAINER_DATA_PATH_V2,
+        default=TRAINER_DATA_PATH_V3,
         help='Dataset Path, Default=%(default)s'
     )
     p.add_argument(
@@ -46,13 +50,13 @@ def define_argparser():
     p.add_argument(
         '--embed_dim',
         type=int,
-        default=1024,
+        default=2048,
         help='Embedding Vector Size. Default=%(default)s'
     )
     p.add_argument(
         '--mlp_dims',
         type=list,
-        default=[1024, 512, 256, 128, 64, 32, 16, 8],
+        default=[2048, 1024, 512, 256, 128, 64, 32, 16],
         help='MultiLayerPerceptron Layers size. Default=%(default)s'
     )
     p.add_argument(
@@ -64,7 +68,7 @@ def define_argparser():
     p.add_argument(
         '--train_ratio',
         type=float,
-        default=0.7,
+        default=0.8,
         help='Train data ratio. Default=%(default)s'
     )
     p.add_argument(
@@ -84,9 +88,11 @@ def main(config):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     if 'kmrd' in config.data_path:
         dataset = KMRDDataset(config.data_path)
-    elif 'sparse_matrix_v1' in config.data_path:
+    elif 'v1' in config.data_path:
         dataset = TrainerDatasetV1(config.data_path)
-    elif 'sparse_matrix_v2' in config.data_path:
+    elif 'v2' in config.data_path:
+        dataset = TrainerDatasetV1(config.data_path)
+    elif 'v3' in config.data_path:
         dataset = TrainerDatasetV1(config.data_path)
 
     train_size = int(len(dataset) * config.train_ratio)
@@ -111,10 +117,13 @@ def main(config):
     ).to(device)
     print(model)
 
-    optimizer = optim.Adam(params=model.parameters(), lr=0.001, weight_decay=1e-6)
-    #optimizer = optim.Adam(params=model.parameters())
+    #optimizer = optim.Adam(params=model.parameters(), lr=0.001, weight_decay=1e-6)
+    optimizer = optim.Adam(params=model.parameters())
 
-    if 'sparse_matrix_v2' in config.data_path:
+    if (
+        'v2' in config.data_path
+        or 'v3' in config.data_path
+    ):
         crit = nn.MSELoss().to(device)
     else:
         crit = nn.BCELoss().to(device)
