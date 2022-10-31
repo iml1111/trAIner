@@ -19,8 +19,9 @@ KMRD_SMALL_DATA_PATH = os.getenv('KMRD_SMALL_DATA_PATH')
 KMRD_SUPER_LARGE_DATA_PATH = os.getenv('KMRD_SUPER_LARGE_DATA_PATH')
 TRAINER_DATA_PATH_V1 = os.getenv('TRAINER_DATA_PATH_V1')
 TRAINER_DATA_PATH_V2 = os.getenv('TRAINER_DATA_PATH_V2')
-TRAINER_DATA_PATH_V3 = os.getenv('TRAINER_DATA_PATH_V3')
-
+TRAINER_DATA_PATH_V3_1 = os.getenv('TRAINER_DATA_PATH_V3_1')
+TRAINER_DATA_PATH_V3_2 = os.getenv('TRAINER_DATA_PATH_V3_2')
+TRAINER_DATA_PATH_V4 = os.getenv('TRAINER_DATA_PATH_V4')
 
 def define_argparser():
     p = argparse.ArgumentParser()
@@ -32,7 +33,7 @@ def define_argparser():
     )
     p.add_argument(
         '--data_path',
-        default=TRAINER_DATA_PATH_V3,
+        default=TRAINER_DATA_PATH_V4,
         help='Dataset Path, Default=%(default)s'
     )
     p.add_argument(
@@ -50,13 +51,13 @@ def define_argparser():
     p.add_argument(
         '--embed_dim',
         type=int,
-        default=2048,
+        default=512,
         help='Embedding Vector Size. Default=%(default)s'
     )
     p.add_argument(
         '--mlp_dims',
         type=list,
-        default=[2048, 1024, 512, 256, 128, 64, 32, 16],
+        default=[512, 256, 128, 64, 32, 16],
         help='MultiLayerPerceptron Layers size. Default=%(default)s'
     )
     p.add_argument(
@@ -92,8 +93,8 @@ def main(config):
         dataset = TrainerDatasetV1(config.data_path)
     elif 'v2' in config.data_path:
         dataset = TrainerDatasetV1(config.data_path)
-    elif 'v3' in config.data_path:
-        dataset = TrainerDatasetV1(config.data_path)
+    elif 'v3' in config.data_path or 'v4' in config.data_path:
+        dataset = TrainerDatasetV3(config.data_path)
 
     train_size = int(len(dataset) * config.train_ratio)
     valid_size = int(len(dataset) * config.valid_ratio)
@@ -103,14 +104,14 @@ def main(config):
             dataset, (train_size, valid_size, test_size)
         )
     )
-    print(f"Users: {dataset.user_cnt}, Items: {dataset.movie_cnt}")
+    print(f"Users: {dataset.user_cnt}, Items: {dataset.item_cnt}")
     print("Train:", train_size, "Valid:", valid_size, "Test:", test_size)
 
     train_data_loader = DataLoader(train_dataset, batch_size=config.batch_size)
     valid_data_loader = DataLoader(valid_dataset, batch_size=config.batch_size)
 
     model = DeepFactorizationMachineModel(
-        dataset.user_movie_cnts,
+        dataset.user_item_cnts,
         config.embed_dim,
         config.mlp_dims,
         config.dropout,
@@ -123,6 +124,7 @@ def main(config):
     if (
         'v2' in config.data_path
         or 'v3' in config.data_path
+        or 'v4' in config.data_path
     ):
         crit = nn.MSELoss().to(device)
     else:
