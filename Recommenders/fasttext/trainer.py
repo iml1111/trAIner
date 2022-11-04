@@ -3,9 +3,9 @@ FastText Train Module
 '''
 import csv
 import sys
-from gensim.models import FastText
+from gensim.models import Word2Vec
 from gensim.models.callbacks import CallbackAny2Vec
-from modules.recommender.fasttext.decorators import *
+from decorators import *
 
 
 class callback(CallbackAny2Vec):
@@ -37,7 +37,7 @@ class Trainer:
 
     def load_model(self, path):
         '''모델 불러오기'''
-        self.model = FastText.load(path)
+        self.model = Word2Vec.load(path)
 
     @model_require
     def save_model(self, path):
@@ -67,7 +67,7 @@ class Trainer:
     def get_params(self):
         '''하이퍼파라미터 반환'''
         return {
-            "workers":self.VEC_SIZE,
+            "vec_size":self.VEC_SIZE,
             "windows":self.WINDOWS,
             "min_count":self.MIN_COUNT,
             "iteration":self.ITERATION,
@@ -86,16 +86,15 @@ class Trainer:
     @train_deco
     def train(self):
         '''학습 메소드'''
-        self.model = FastText(
-            size=self.VEC_SIZE,
+        self.model = Word2Vec(
+            vector_size=self.VEC_SIZE,
             window=self.WINDOWS,
             min_count=self.MIN_COUNT)
-        self.model.build_vocab(sentences=self.corpora)
+        self.model.build_vocab(self.corpora)
         self.model.train(
-            sentences=self.corpora,
+            corpus_iterable=self.corpora,
             total_examples=len(self.corpora),
             epochs=self.ITERATION,
-            workers=self.WORKERS,
             callbacks=[callback(self.ITERATION)],
             compute_loss=True)
 
