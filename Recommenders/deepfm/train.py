@@ -22,6 +22,7 @@ TRAINER_DATA_PATH_V2 = os.getenv('TRAINER_DATA_PATH_V2')
 TRAINER_DATA_PATH_V3_1 = os.getenv('TRAINER_DATA_PATH_V3_1')
 TRAINER_DATA_PATH_V3_2 = os.getenv('TRAINER_DATA_PATH_V3_2')
 TRAINER_DATA_PATH_V4 = os.getenv('TRAINER_DATA_PATH_V4')
+TRAINER_DATA_PATH_ = os.getenv('TRAINER_DATA_PATH_')
 
 def define_argparser():
     p = argparse.ArgumentParser()
@@ -33,7 +34,7 @@ def define_argparser():
     )
     p.add_argument(
         '--data_path',
-        default=TRAINER_DATA_PATH_V4,
+        default=TRAINER_DATA_PATH_ + "v12.1.csv",
         help='Dataset Path, Default=%(default)s'
     )
     p.add_argument(
@@ -51,13 +52,13 @@ def define_argparser():
     p.add_argument(
         '--embed_dim',
         type=int,
-        default=512,
+        default=1024,
         help='Embedding Vector Size. Default=%(default)s'
     )
     p.add_argument(
         '--mlp_dims',
         type=list,
-        default=[512, 256, 128, 64, 32, 16],
+        default=[1024, 512, 256, 128, 64, 32, 16],
         help='MultiLayerPerceptron Layers size. Default=%(default)s'
     )
     p.add_argument(
@@ -75,7 +76,7 @@ def define_argparser():
     p.add_argument(
         '--valid_ratio',
         type=float,
-        default=0.15,
+        default=0.19,
         help='Valid data ratio. Default=%(default)s'
     )
     config = p.parse_args()
@@ -87,14 +88,10 @@ def main(config):
     pprint(vars(config))
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    if 'kmrd' in config.data_path:
-        dataset = KMRDDataset(config.data_path)
-    elif 'v1' in config.data_path:
-        dataset = TrainerDatasetV1(config.data_path)
-    elif 'v2' in config.data_path:
-        dataset = TrainerDatasetV1(config.data_path)
-    elif 'v3' in config.data_path or 'v4' in config.data_path:
-        dataset = TrainerDatasetV3(config.data_path)
+    
+    #dataset = KMRDDataset(config.data_path)
+    #dataset = TrainerDatasetV1(config.data_path)
+    dataset = TrainerDatasetV3(config.data_path)
 
     train_size = int(len(dataset) * config.train_ratio)
     valid_size = int(len(dataset) * config.valid_ratio)
@@ -118,17 +115,11 @@ def main(config):
     ).to(device)
     print(model)
 
-    #optimizer = optim.Adam(params=model.parameters(), lr=0.001, weight_decay=1e-6)
-    optimizer = optim.Adam(params=model.parameters())
-
-    if (
-        'v2' in config.data_path
-        or 'v3' in config.data_path
-        or 'v4' in config.data_path
-    ):
-        crit = nn.MSELoss().to(device)
-    else:
-        crit = nn.BCELoss().to(device)
+    optimizer = optim.Adam(params=model.parameters(), lr=0.001, weight_decay=1e-6)
+    #optimizer = optim.Adam(params=model.parameters())
+        
+    crit = nn.MSELoss().to(device)
+    #crit = nn.BCELoss().to(device)
 
     print(optimizer, crit)
     trainer = Trainer(model, optimizer, crit, device)
