@@ -18,10 +18,10 @@ class Config:
     API_LOGGING = False
     JSON_AS_ASCII = False
     SECRET_KEY = "top-secret"
-    MONGODB_URI = os.environ[APP_NAME + "_MONGODB_URI"]
-    MONGODB_NAME = os.environ[APP_NAME + "_MONGODB_NAME"]
+    MONGODB_URI = "mongodb://localhost:27017"
+    MONGODB_NAME = "Trainer"
     # API 타이머 출력 경로 (response, log, none)
-    TIMER_OUTPUT = os.getenv('TIMER_OUTPUT', 'response')
+    TIMER_OUTPUT = 'response'
 
     @staticmethod
     def init_app(app):
@@ -36,32 +36,8 @@ elif FLASK_CONFIG == 'production':
     class AppConfig(Config):
         DEBUG = False
         TESTING = False
-
-        @staticmethod
-        def init_app(app):
-            '''File Logger Sample'''
-            dictConfig({
-                'version': 1,
-                'formatters': {
-                    'default': {
-                        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
-                    }
-                },
-                'handlers': {
-                    'file': {
-                        'level': 'WARNING',
-                        'class': 'logging.handlers.RotatingFileHandler',
-                        'filename': os.getenv(APP_NAME + '_ERROR_LOG_PATH') or './server.error.log',
-                        'maxBytes': 1024 * 1024 * 5,
-                        'backupCount': 5,
-                        'formatter': 'default',
-                    },
-                },
-                'root': {
-                    'level': 'WARNING',
-                    'handlers': ['file']
-                }
-            })
+        TIMER_OUTPUT = 'log'
+        MONGODB_URI = os.environ[APP_NAME + "_MONGODB_URI"]
 else:
     raise Exception("Flask Config not Selected.")
 
