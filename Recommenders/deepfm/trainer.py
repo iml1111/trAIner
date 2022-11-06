@@ -102,6 +102,14 @@ class Trainer:
             if valid_loss <= lowest_loss:
                 lowest_loss = valid_loss
                 best_model = deepcopy(self.model.state_dict())
+            
+            torch.save(
+                {
+                    'model': self.model.state_dict(),
+                    'config': config
+                },
+                config.model_fn + f".{epoch + 1}" 
+            )
 
             print("Epoch(%d/%d): train_loss=%.4e valid_loss=%.4e lowest_loss=%.4e" % (
                 epoch + 1,
