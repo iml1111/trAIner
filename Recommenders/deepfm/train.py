@@ -34,7 +34,7 @@ def define_argparser():
     )
     p.add_argument(
         '--data_path',
-        default=TRAINER_DATA_PATH_ + "v12.1.csv",
+        default=TRAINER_DATA_PATH_ + "v12.csv",
         help='Dataset Path, Default=%(default)s'
     )
     p.add_argument(
