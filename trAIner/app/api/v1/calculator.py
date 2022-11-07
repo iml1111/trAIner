@@ -5,7 +5,7 @@ from flask import abort
 from flask_validation_extended import Validator, Query
 from flask_validation_extended import ValidationRule
 from app.api.response import response_200, bad_request
-from app.api.sample_api import sample_api as api
+from app.api.v1 import api_v1 as api
 from app.api.decorator import timer
 from controller import calculator, log
 
