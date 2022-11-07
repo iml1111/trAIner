@@ -23,6 +23,9 @@ class Config:
     # API 타이머 출력 경로 (response, log, none)
     TIMER_OUTPUT = 'response'
 
+    # Model Paths
+    CTR_MODEL_PATH = os.environ['CTR_MODEL_PATH']
+
     @staticmethod
     def init_app(app):
         pass
