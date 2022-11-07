@@ -8,6 +8,7 @@ importlib-metadata==4.12.0
 itsdangerous==2.1.2
 Jinja2==3.1.2
 MarkupSafe==2.1.1
+numpy==1.23.4
 PyJWT==2.6.0
 pymongo==4.3.2
 python-dateutil==2.8.2
