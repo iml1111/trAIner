@@ -37,9 +37,11 @@ def create_flask_app(config):
     api.init_app(app)
     register_connection_pool(app)
 
+    # Model Controller import
+
     app.register_blueprint(error_bp)
     app.register_blueprint(template_bp)
-    app.register_blueprint(sample_v1_bp, url_prefix='/api/v1')
+    app.register_blueprint(api_v1_bp, url_prefix='/api/v1')
 
     return app
 
