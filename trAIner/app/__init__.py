@@ -10,6 +10,7 @@ from app.api.template import template as template_bp
 from app.api.error_handler import error_handler as error_bp
 from app.api.v1 import api_v1 as api_v1_bp
 from model import register_connection_pool
+from controller.ctr_predictor import CTRPredictor
 
 
 class CustomJSONEncoder(JSONEncoder):
@@ -38,6 +39,9 @@ def create_flask_app(config):
     register_connection_pool(app)
 
     # Model Controller import
+    app.ctr_predictor = CTRPredictor(
+        config.CTR_MODEL_PATH
+    )
 
     app.register_blueprint(error_bp)
     app.register_blueprint(template_bp)
