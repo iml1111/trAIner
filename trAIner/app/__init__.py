@@ -8,8 +8,9 @@ from bson.objectid import ObjectId
 from app import api
 from app.api.template import template as template_bp
 from app.api.error_handler import error_handler as error_bp
-from app.api.sample_api import sample_api as sample_api_bp
+from app.api.v1 import api_v1 as api_v1_bp
 from model import register_connection_pool
+from controller.ctr_predictor import CTRPredictor
 
 
 class CustomJSONEncoder(JSONEncoder):
@@ -37,9 +38,14 @@ def create_flask_app(config):
     api.init_app(app)
     register_connection_pool(app)
 
+    # Model Controller import
+    app.ctr_predictor = CTRPredictor(
+        config.CTR_MODEL_PATH
+    )
+
     app.register_blueprint(error_bp)
     app.register_blueprint(template_bp)
-    app.register_blueprint(sample_api_bp, url_prefix='/sample/')
+    app.register_blueprint(api_v1_bp, url_prefix='/api/v1')
 
     return app
 

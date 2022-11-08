@@ -4,7 +4,7 @@ Get API
 from flask import g, jsonify, current_app
 from flask_validation_extended import Json, Validator
 from app.api.response import response_200, bad_request, created
-from app.api.sample_api import sample_api as api
+from app.api.v1 import api_v1 as api
 from app.api.decorator import timer
 from model.mongodb import MasterConfig, Log
 

@@ -1,0 +1,48 @@
+name: Production Deployment
+
+on:
+  push:
+      branches:
+        - main
+
+env:
+  DOCKERHUB_ID: ${{ secrets.DOCKERHUB_ID }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+  IMAGE: ${{ secrets.DOCKERHUB_ID }}/trainer:latest
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  build:
+    name: CI
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ env.DOCKERHUB_ID }}
+        password: ${{ env.DOCKERHUB_TOKEN }}
+
+    - name: Build, tag, and push image to DockerHub
+      run: |
+        docker build -t ${{ env.IMAGE }} .
+        docker push ${{ env.IMAGE }}
+  
+  deploy:
+    needs: build
+    name: CD
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Configure AWS credentials for SSM
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+      
+      - name: AWS SSM Deploy Command
+        run: aws ssm send-command --targets Key=tag:Name,Values=colawork --document-name colawork-ssm-document

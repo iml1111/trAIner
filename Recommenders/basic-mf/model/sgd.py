@@ -1,11 +1,12 @@
 from sklearn.metrics import mean_squared_error
+from sklearn.metrics import confusion_matrix, accuracy_score
 import numpy as np
 from tqdm import trange
 
 
 class SGD:
 
-    def __init__(self, sparse_matrix, K, lr, beta, n_epochs):
+    def __init__(self, sparse_matrix, test_set, K, lr, beta, n_epochs):
         """
         Arguments
         - sparse_matrix : user-item rating matrix
@@ -21,6 +22,7 @@ class SGD:
         self.lr = lr
         self.beta = beta
         self.n_epochs = n_epochs
+        self.test_set = test_set
 
     def train(self):
         # Initialize user and item latent feature matrice
@@ -37,7 +39,7 @@ class SGD:
         samples = list(zip(idx, jdx))
 
         training_log = []
-        progress = trange(self.n_epochs, desc="train-rmse: nan")
+        progress = trange(self.n_epochs, desc="train-rmse: nan test-rmse: nan")
         for idx in progress:
             np.random.shuffle(samples)
 
@@ -55,7 +57,9 @@ class SGD:
                 self.U[u, :] += self.lr * (error * I_i - self.beta * self.U[u,:])
 
             rmse = self.evaluate()
-            progress.set_description("train-rmse: %0.6f" % rmse)
+            test_rmse = self.test_evaluate(self.test_set)
+            print("train-rmse: %0.6f test-rmse: %0.6f" % (rmse, test_rmse))
+            progress.set_description("train-rmse: %0.6f test-rmse: %0.6f" % (rmse, test_rmse))
             progress.refresh()
             training_log.append((idx, rmse))
 
@@ -102,6 +106,19 @@ class SGD:
 
         error = mean_squared_error(ys, preds)
         return np.sqrt(error)
+
+    def test_ctr(self, test_set):
+        pred_matrix = self.get_pred_matrix()
+        
+        ys, preds = [], []
+        for i, j, rating in test_set:
+            ys.append(1 if rating >= 3 else 0)
+            preds.append(1 if pred_matrix[i, j] >= 3 else 0)
+
+        print("# Confusion Matrix")
+        print(confusion_matrix(ys, preds))
+        print("Accuracy:", accuracy_score(ys, preds))
+
 
 
 
