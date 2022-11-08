@@ -34,12 +34,14 @@ if FLASK_CONFIG == 'development':
     class AppConfig(Config):
         DEBUG = True
         TESTING = False
+        MONGODB_URI = os.environ[APP_NAME + "_MONGODB_URI"]
 
 elif FLASK_CONFIG == 'production':
     class AppConfig(Config):
         DEBUG = False
         TESTING = False
         TIMER_OUTPUT = 'log'
+        SECRET_KEY = os.environ["SECRET_KEY"]
         MONGODB_URI = os.environ[APP_NAME + "_MONGODB_URI"]
 else:
     raise Exception("Flask Config not Selected.")
@@ -49,6 +51,7 @@ config = AppConfig
 class TestConfig(Config):
     DEBUG = True
     TESTING = True
+    MONGODB_URI = os.environ[APP_NAME + "_MONGODB_URI"]
 
 if __name__ == '__main__':
     pass
