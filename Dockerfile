@@ -7,7 +7,7 @@ COPY ./trAIner/requirements.txt /home/trAIner/requirements.txt
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-EXPOSE 5001
+EXPOSE 5000
 
 CMD ["gunicorn", "-w", "2", \
     "--bind", "0.0.0.0:5000", \
