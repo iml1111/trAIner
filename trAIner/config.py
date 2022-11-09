@@ -39,6 +39,7 @@ if FLASK_CONFIG == 'development':
     class AppConfig(Config):
         DEBUG = True
         TESTING = False
+        JWT_COOKIE_CSRF_PROTECT = False
         JWT_COOKIE_SECURE = False
 
 elif FLASK_CONFIG == 'production':
@@ -46,6 +47,7 @@ elif FLASK_CONFIG == 'production':
         DEBUG = False
         TESTING = False
         TIMER_OUTPUT = 'log'
+        JWT_COOKIE_CSRF_PROTECT = True
         JWT_COOKIE_SECURE = True
 else:
     raise Exception("Flask Config not Selected.")

@@ -1,5 +1,5 @@
 from flask import g, jsonify, current_app
-from flask_validation_extended import Json, Validator
+from flask_validation_extended import Json, Validator, Route
 from app.api.response import response_200, bad_request, created
 from app.api.decorator import timer
 from model.mongodb import User, MasterConfig, Log
@@ -14,8 +14,16 @@ from flask_jwt_extended import (
 
 api = Blueprint('auth', __name__)
 
+@api.route('/sample', methods=['GET'])
+@Validator(bad_request)
+@timer
+def sample_api():
+    """sample API"""
+    user = User(current_app.db).get_userinfo("16011090")
+    return response_200(user)
 
-@api.route('/sign-in', methods=['POST'])
+
+@api.route('/signin', methods=['POST'])
 @Validator(bad_request)
 @timer
 def sign_in(

@@ -35,7 +35,7 @@ class User(Model):
             {'password': 1}
         )
     
-    def get_userifno(self, user_id: str):
+    def get_userinfo(self, user_id: str):
         """user 정보 반환"""
         return self.col.find_one(
             {'id': user_id},
