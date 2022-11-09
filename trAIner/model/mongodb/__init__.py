@@ -46,4 +46,5 @@ class ModelInitializer:
 # Collections
 from .log import Log
 from .master_config import MasterConfig
+from user import User
 MODELS = [Log, MasterConfig]
