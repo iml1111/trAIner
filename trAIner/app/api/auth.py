@@ -23,7 +23,7 @@ def auth_test_api():
     """인증 테스트"""
     return response_200("hello, %s" % get_jwt_identity())
 
-    
+
 @api.route('/sign-in', methods=['POST'])
 @Validator(bad_request)
 @timer
@@ -78,6 +78,7 @@ def sign_up(
             'refresh_token': create_refresh_token(user_oid)
         }
     )
+    set_access_cookies(resp, create_access_token(user_oid))
     return resp
 
 
