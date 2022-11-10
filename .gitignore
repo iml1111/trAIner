@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 .idea/
 ctr_model.npy
+model.pth.20
 # C extensions
 *.so
 .idea/

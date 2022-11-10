@@ -9,8 +9,15 @@ from app import api
 from app.api.template import template as template_bp
 from app.api.error_handler import error_handler as error_bp
 from app.api.v1 import api_v1 as api_v1_bp
+from app.api.auth import api as auth_bp
 from model import register_connection_pool
 from controller.ctr_predictor import CTRPredictor
+from flask_jwt_extended import JWTManager
+from flask_cors import CORS
+
+
+jwt_manager = JWTManager()
+cors = CORS()
 
 
 class CustomJSONEncoder(JSONEncoder):
@@ -36,6 +43,8 @@ def create_flask_app(config):
     app.config.from_object(config)
     config.init_app(app)
     api.init_app(app)
+    jwt_manager.init_app(app)
+    cors.init_app(app)
     register_connection_pool(app)
 
     # Model Controller import
@@ -46,6 +55,7 @@ def create_flask_app(config):
     app.register_blueprint(error_bp)
     app.register_blueprint(template_bp)
     app.register_blueprint(api_v1_bp, url_prefix='/api/v1')
+    app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
     return app
 
