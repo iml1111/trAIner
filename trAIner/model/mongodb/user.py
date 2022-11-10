@@ -26,7 +26,7 @@ class User(Model):
 
     def insert_user(self, document):
         """user 생성"""
-        self.col.insert_one(self.schemize(document))
+        return self.col.insert_one(self.schemize(document))
 
     def get_password_with_id(self, user_id: str):
         """user_id를 통한 PW 조회"""
