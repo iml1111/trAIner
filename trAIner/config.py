@@ -23,10 +23,11 @@ class Config:
     # API 타이머 출력 경로 (response, log, none)
     TIMER_OUTPUT = 'response'
     JWT_TOKEN_LOCATION = ['cookies', 'headers']
-    JWT_ACCESS_COOKIE_NAME='access_token'
-    JWT_ACCESS_TOKEN_EXPIRES = 60 * 60 * 24 * 2
+    #JWT_ACCESS_COOKIE_NAME = 'accessToken'
+    JWT_ACCESS_TOKEN_EXPIRES = 60 * 60 * 24 * 3
     JWT_REFRESH_TOKEN_EXPIRES = 60 * 60 * 24 * 60
     JWT_SESSION_COOKIE = False
+    COOKIE_MAX_AGE = 60 * 60 * 24 * 3
 
     # Model Paths
     CTR_MODEL_PATH = os.environ['CTR_MODEL_PATH']

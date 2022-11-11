@@ -1,10 +1,10 @@
+from flask import Blueprint
+from model.mongodb import User
+from app.api.decorator import timer
 from flask import g, jsonify, current_app
+from sejong_univ_auth import auth, DosejongSession
 from flask_validation_extended import Json, Validator
 from app.api.response import response_200, bad_request
-from app.api.decorator import timer
-from model.mongodb import User
-from flask import Blueprint
-from sejong_univ_auth import auth, DosejongSession
 from flask_jwt_extended import (
     get_jwt_identity,
     create_refresh_token,
@@ -29,7 +29,8 @@ def auth_test_api():
 @timer
 def sign_in(
     id=Json(str),
-    pw=Json(str)
+    pw=Json(str),
+    isPersist=Json(bool)
 ):
     """로그인"""
     user = User(current_app.db).get_password_with_id(id)
@@ -45,7 +46,11 @@ def sign_in(
             'refresh_token': create_refresh_token(user_oid)
         }
     )
-    set_access_cookies(resp, create_access_token(user_oid))
+    set_access_cookies(
+        response=resp,
+        encoded_access_token=create_access_token(user_oid),
+        max_age=current_app.config['COOKIE_MAX_AGE'] if isPersist else 1
+    )
     return resp
 
 
@@ -66,9 +71,10 @@ def sign_up(
         return bad_request('you are not sejong user.')
 
     user_oid = user_model.insert_user({
-        'id': id,
+        'userId': id,
         'password': pw,
-        'name': sejong_user.body['name']
+        'name': sejong_user.body['name'],
+        'isHotUser': False
     }).inserted_id
 
     user_oid = str(user_oid)
@@ -78,7 +84,11 @@ def sign_up(
             'refresh_token': create_refresh_token(user_oid)
         }
     )
-    set_access_cookies(resp, create_access_token(user_oid))
+    set_access_cookies(
+        response=resp,
+        encoded_access_token=create_access_token(user_oid),
+        max_age=1
+    )
     return resp
 
 

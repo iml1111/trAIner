@@ -7,6 +7,11 @@ from time import time
 from flask import current_app, g, Response
 from controller import log
 from config import config
+from bson import ObjectId
+from app.api.response import bad_access_token
+from bson.errors import InvalidId
+from model.mongodb import User
+from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 
 
 def timer(func):
@@ -31,4 +36,18 @@ def timer(func):
                 log.info(f"process_time: {g.process_time}")
 
         return result
+    return wrapper
+
+
+def login_required(func):
+    """유저 토큰 검증 데코레이터"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        verify_jwt_in_request()
+        try:
+            user_oid = ObjectId(get_jwt_identity())
+        except InvalidId:
+            return bad_access_token
+        g.user_oid = user_oid
+        return func(*args, **kwargs)
     return wrapper
