@@ -31,6 +31,7 @@ class Config:
     # Model Paths
     CTR_MODEL_PATH = os.environ['CTR_MODEL_PATH']
     DEEP_MODEL_PATH = os.environ['DEEP_MODEL_PATH']
+    TOPIC_MODEL_PATH = os.environ['TOPIC_MODEL_PATH']
 
     @staticmethod
     def init_app(app):
