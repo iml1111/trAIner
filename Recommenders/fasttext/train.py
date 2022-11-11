@@ -8,9 +8,9 @@ train_data = load_corpora()
 trainer = Trainer() 
 trainer.set_params(
     vec_size=30,
-    windows=10,
-    min_count=5,
-    iteration=2,
+    windows=20,
+    min_count=13,
+    iteration=140,
     workers=3
 )
 
