@@ -127,10 +127,11 @@ class Trainer:
         '''
         with open(vec_path, 'w', encoding='utf-8') as f:
             writer = csv.writer(f, delimiter='\t')
-            words = self.model.wv.vocab.keys()
+            words = self.model.wv.key_to_index
             for word in words:
-                row = self.model.wv.get_vector(word).tolist()
+                row = self.model.wv.get_vector(word)
                 writer.writerow(row)
         with open(meta_path, 'w', encoding='utf-8') as f:
             writer = csv.writer(f, delimiter='\t')
-            for word in words:writer.writerow([word])
+            for word in words:
+                writer.writerow([word])

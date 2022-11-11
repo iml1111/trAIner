@@ -10,13 +10,14 @@ trainer.set_params(
     vec_size=30,
     windows=10,
     min_count=5,
-    iteration=100,
+    iteration=2,
     workers=3
 )
 
 trainer.set_corpora(train_data) 
 trainer.train()
-trainer.save_model(path="./ft_model_v1")
+trainer.export_tsv()
+trainer.save_model(path="./topic_model.w2v")
 
-recommender = Recommender("./ft_model_v1")
+recommender = Recommender("./topic_model.w2v")
 recommender.make_test_report()
