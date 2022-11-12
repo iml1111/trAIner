@@ -19,14 +19,14 @@ class TopicPredictor:
 
         Return [
             # item, similarity
-            ('989', 0.9443435668945312), 
+            ('989', 0.9443435668945312),
             ('862', 0.9233401417732239),
             ...
         ]
         """
         return self.model.wv.most_similar(item, topn=num)
 
-    def get_similar_items_by_vector(vec, num=10):
+    def get_similar_items_by_vector(self, vec, num=10):
         """
         입력된 item vector에 대하여 가장 가까운 item를 n개 반환
         """

@@ -70,7 +70,35 @@ class Problem(Model):
                 'output': 1,
                 'example': 1,
                 'limit': 1,
-                'note': 1
+                'note': 1,
+                'problemNumber': 1
             }
         )
+
     
+    def get_problem_info_with_numbers(self, pro_numbers: list):
+        """문제 번호를 이용한 문제 정보 반환"""
+        return list(self.col.find(
+            {'problemNumber': {'$in': pro_numbers}},
+            {
+                'titleKo': 1,
+                'correctPeople': 1,
+                'timeLimit': 1,
+                'memoryLimit': 1,
+                'description': 1,
+                'input': 1,
+                'output': 1,
+                'example': 1,
+                'limit': 1,
+                'note': 1,
+                'problemNumber': 1
+            }
+        ))
+    
+
+    def get_problem_number(self, pro_id: ObjectId):
+        """문제 번호 반환"""
+        return self.col.find_one(
+            {'_id': pro_id},
+            {'problemNumber': 1}
+        )

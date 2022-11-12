@@ -23,7 +23,7 @@ cors = CORS()
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime):
-            return obj.strftime("%Y-%m-%d %H:%m:%S")
+            return obj.strftime("%Y-%m-%d %H:%M:%S")
         elif isinstance(obj, ObjectId):
             return str(obj)
         else:
