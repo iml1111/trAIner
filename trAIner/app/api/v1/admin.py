@@ -18,6 +18,7 @@ from app.api.v1 import api_v1 as api
 def get_ctr_threshold_api():
     """CTR Model 기준 임계치 파라미터 조절"""
     ctr_threshold = MasterConfig().get_config('ctr_threshold')
+    ctr_threshold = ctr_threshold['value'] if ctr_threshold else 3
     return response_200(ctr_threshold or 3)
 
 
@@ -25,10 +26,10 @@ def get_ctr_threshold_api():
 @Validator(bad_request)
 @timer
 def put_ctr_threshold_api(
-    threshold=Query([float, int])
+    value=Query([float, int])
 ):
     """CTR Model 기준 임계치 파라미터 조절"""
-    MasterConfig().set_config('ctr_threshold', threshold)
+    MasterConfig().set_config('ctr_threshold', value)
     return response_200()
 
 
@@ -38,6 +39,7 @@ def put_ctr_threshold_api(
 def get_deep_threshold_api():
     """Deep Model 기준 임계치 파라미터 조절"""
     deep_threshold = MasterConfig().get_config('deep_threshold')
+    deep_threshold = deep_threshold['value'] if deep_threshold else 1
     return response_200(deep_threshold or 1)
 
 
@@ -45,10 +47,10 @@ def get_deep_threshold_api():
 @Validator(bad_request)
 @timer
 def put_deep_threshold_api(
-    threshold=Query([float, int])
+    value=Query([float, int])
 ):
     """Deep Model 기준 임계치 파라미터 조절"""
-    MasterConfig().set_config('deep_threshold', threshold)
+    MasterConfig().set_config('deep_threshold', value)
     return response_200()
 
 
@@ -58,6 +60,7 @@ def put_deep_threshold_api(
 def get_hotuser_random_api():
     """Hot User Recom Score 랜덤 가중치 조절"""
     hotuser_random = MasterConfig().get_config('hotuser_random')
+    hotuser_random = hotuser_random['value'] if hotuser_random else 0.5
     return response_200(hotuser_random or 0.5)
 
 
@@ -65,10 +68,10 @@ def get_hotuser_random_api():
 @Validator(bad_request)
 @timer
 def put_hotuser_random_api(
-    random=Query([float, int])
+    value=Query([float, int])
 ):
     """Hot User Recom Score 랜덤 가중치 조절"""
-    MasterConfig().set_config('hotuser_random', random)
+    MasterConfig().set_config('hotuser_random', value)
     return response_200()
 
 
@@ -78,6 +81,7 @@ def put_hotuser_random_api(
 def get_topic_similarity_api():
     """Topic Model 유사도 가중치 조절"""
     topic_similarity = MasterConfig().get_config('topic_similarity')
+    topic_similarity = topic_similarity['value'] if topic_similarity else 1
     return response_200(topic_similarity or 1)
 
 
@@ -85,8 +89,8 @@ def get_topic_similarity_api():
 @Validator(bad_request)
 @timer
 def put_topic_similarity_api(
-    similarity=Query([float, int])
+    value=Query([float, int])
 ):
     """Topic Model 유사도 가중치 조절"""
-    MasterConfig().set_config('topic_similarity', similarity)
+    MasterConfig().set_config('topic_similarity', value)
     return response_200()
