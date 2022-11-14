@@ -19,14 +19,14 @@ class TopicPredictor:
 
         Return [
             # item, similarity
-            ('989', 0.9443435668945312), 
+            ('989', 0.9443435668945312),
             ('862', 0.9233401417732239),
             ...
         ]
         """
         return self.model.wv.most_similar(item, topn=num)
 
-    def get_similar_items_by_vector(vec, num=10):
+    def get_similar_items_by_vector(self, vec, num=10):
         """
         입력된 item vector에 대하여 가장 가까운 item를 n개 반환
         """
@@ -56,6 +56,19 @@ class TopicPredictor:
     def is_in_dict(self, word):
         '''입력된 토큰이 모델이 알고 있는 토큰인지 반환'''
         return word in self.model.wv.key_to_index
+
+
+def sort_problems_by_accuracy(items, problems):
+    """토픽 모델의 정확도를 기준으로 문제를 정렬"""
+    data = []
+    for i in items:
+        for problem in problems:
+            #모델을 통해 얻은 정확도 삽입
+            if int(i[0]) == problem['problemNumber']:
+                problem['modelAccuracy'] = i[1]
+                data.append(problem)
+                break
+    return data
 
 
 if __name__ == '__main__':

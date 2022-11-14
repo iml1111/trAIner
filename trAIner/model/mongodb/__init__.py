@@ -47,4 +47,8 @@ class ModelInitializer:
 from .log import Log
 from .master_config import MasterConfig
 from .user import User
+from .problem import Problem
+from .solve_log import SolveLog
+from .roadmap import Roadmap
+from .interact import Interact
 MODELS = [Log, MasterConfig]

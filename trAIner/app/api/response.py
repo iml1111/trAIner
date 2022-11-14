@@ -1,4 +1,6 @@
 """Response Shortcuts"""
+import json
+from flask import Response
 
 def response_200(result=None):
     if result is None:
@@ -33,3 +35,12 @@ not_found = {
     'msg': 'fail',
     'description': "Resource not found."
 }, 404
+
+
+def make_resp(data: dict, status: int):
+    """flask Response 객체 생성"""
+    return Response(
+        json.dumps(data),
+        mimetype='application/json',
+        status=status
+    )
