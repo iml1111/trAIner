@@ -1,31 +1,11 @@
-from random import random, uniform
-from config import config
-from . import api_v1 as api
+from random import uniform
 from flask import g, current_app
-from app.api.response import response_200, bad_request, not_found
-from app.api.decorator import timer, login_required
-from model.mongodb import User, Problem, SolveLog
-from flask_validation_extended import Json, Validator, Route, Query, Min, Max
 from controller.util import get_random_index
+from model.mongodb import User, Problem, SolveLog
 from controller.topic_predictor import sort_problems_by_accuracy
 
-@api.route('/problems/hot', methods=['GET'])
-@Validator(bad_request)
-@login_required
-@timer
-def get_hot_problems(
-    _type=Query(str),
-    count=Query(int, optional=True, rules=[Min(1), Max(20)])
-):
-    """핫 유저 문제 반환"""
 
-@api.route('/problems/hot/similar', methods=['GET'])
-@Validator(bad_request)
-@login_required
-@timer
-def get_similar_problems(
-    count=Query(int, optional=True, rules=[Min(1), Max(20)])
-):
+def get_similar_problems(count: int):
     """최근에 푼 유형과 비슷한 문제 반환"""
     user = User(current_app.db).get_userinfo_simple(
         user_oid=g.user_oid
@@ -58,17 +38,10 @@ def get_similar_problems(
         pro_numbers=problem_numbers
     )
     data = sort_problems_by_accuracy(items, problems)
-    print([i['problemNumber'] for i in data])
-    return response_200(data)
+    return data
 
 
-@api.route('/problems/hot/click', methods=['GET'])
-@Validator(bad_request)
-@login_required
-@timer
-def get_click_problems(
-    count=Query(int, optional=True, rules=[Min(1), Max(20)])
-):
+def get_click_problems(count: int):
     """시도할 가능성이 높은 문제 반환"""
     user = User(current_app.db).get_userinfo_simple(
         user_oid=g.user_oid
@@ -96,31 +69,15 @@ def get_click_problems(
     data = Problem(current_app.db).get_problem_info_with_numbers(
         pro_numbers=problem_numbers
     )
-    print([i['problemNumber'] for i in data])
-    return response_200(data)
+    return data
 
 
-@api.route('/problems/hot/vulnerable', methods=['GET'])
-@Validator(bad_request)
-@login_required
-@timer
-def get_vulnerable_problems(
-    count=Query(int, optional=True, rules=[Min(1), Max(20)])
-):
+def get_vulnerable_problems(count: int):
     """틑릴 가능성이 높은 문제 반환"""
-    #시도할 가능성이 높은 문제와 똑같은 로직 적용
-    #TODO: 희재형한테 해당 로직 피드백 받고나서 복붙
-    return response_200()
 
 
-@api.route('/problems/hot/hot4', methods=['GET'])
-@Validator(bad_request)
-@login_required
-@timer
-def hot4(
-    count=Query(int, optional=True, rules=[Min(1), Max(20)])
-):
-    """Hot 4"""
+def get_unfamiliar_problems(count: int):
+    """익숙하지 않은 유형의 문제 반환"""
     user = User(current_app.db).get_userinfo_simple(
         user_oid=g.user_oid
     )
@@ -153,5 +110,4 @@ def hot4(
         pro_numbers=problem_numbers
     )
     data = sort_problems_by_accuracy(items, problems)
-    print([i['problemNumber'] for i in data])
-    return response_200(data)
+    return data
