@@ -2,7 +2,7 @@ import os
 import numpy as np
 import torch
 from controller.exceptions import (
-	UserIndexError, ItemIndexError
+    UserIndexError, ItemIndexError
 )
 
 
@@ -104,47 +104,47 @@ class DeepFactorizationMachineModel(torch.nn.Module):
 
 class DeepPredictor:
 
-	def __init__(self, deep_model_path: str):
-		self.deep_model_path = deep_model_path
-		model_data = torch.load(
-			deep_model_path,
-			map_location=torch.device('cpu')
-		)
-		self.model_state_dict = model_data['model']
-		self.model_config = model_data['config']
-		self.model = DeepFactorizationMachineModel(
-			# # Users: 1003, Items: 1188 (1003, 1188)
-			[1003, 1188],
-			self.model_config.embed_dim,
-			self.model_config.mlp_dims,
-			self.model_config.dropout,
-		).to('cpu')
-		self.model.load_state_dict(self.model_state_dict)
-		self.model.eval()
+    def __init__(self, deep_model_path: str):
+        self.deep_model_path = deep_model_path
+        model_data = torch.load(
+            deep_model_path,
+            map_location=torch.device('cpu')
+        )
+        self.model_state_dict = model_data['model']
+        self.model_config = model_data['config']
+        self.model = DeepFactorizationMachineModel(
+            # # Users: 1003, Items: 1188 (1003, 1188)
+            [1003, 1188],
+            self.model_config.embed_dim,
+            self.model_config.mlp_dims,
+            self.model_config.dropout,
+        ).to('cpu')
+        self.model.load_state_dict(self.model_state_dict)
+        self.model.eval()
 
-	def predict(self, user_id: int, item_id: int) -> float:
+    def predict(self, user_id: int, item_id: int) -> float:
 
-		if not (0 <= user_id <= 1002):
-			raise UserIndexError()
-		if not (0 <= item_id <= 1187):
-			raise ItemIndexError()
+        if not (0 <= user_id <= 1002):
+            raise UserIndexError()
+        if not (0 <= item_id <= 1187):
+            raise ItemIndexError()
 
-		with torch.no_grad():
-			x = torch.tensor([[user_id, item_id]])
-			y = self.model(x)
-		return float(y[0][0])
+        with torch.no_grad():
+            x = torch.tensor([[user_id, item_id]])
+            y = self.model(x)
+        return float(y[0][0])
 
 
 
 if __name__ == '__main__':
-	from config import config
+    from config import config
 
-	predictor = DeepPredictor(config.DEEP_MODEL_PATH)
+    predictor = DeepPredictor(config.DEEP_MODEL_PATH)
 
-	# (22,610) => 0.104762
-	user_id, item_id = 22, 610
-	print(predictor.predict(user_id, item_id))
-	
-	# (22,597) => 0.000000
-	user_id, item_id = 22, 597
-	print(predictor.predict(user_id, item_id))
+    # (22,610) => 0.104762
+    user_id, item_id = 22, 610
+    print(predictor.predict(user_id, item_id))
+    
+    # (22,597) => 0.000000
+    user_id, item_id = 22, 597
+    print(predictor.predict(user_id, item_id))
