@@ -45,9 +45,12 @@ def login_required(func):
     def wrapper(*args, **kwargs):
         verify_jwt_in_request()
         try:
-            user_oid = ObjectId(get_jwt_identity())
+            user = get_jwt_identity()
+            user_oid = ObjectId(user['user_oid'])
+            user_id = user['user_id']
         except InvalidId:
             return bad_access_token
         g.user_oid = user_oid
+        g.user_id = user_id
         return func(*args, **kwargs)
     return wrapper

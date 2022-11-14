@@ -1,11 +1,11 @@
 from . import api_v1 as api
 from config import config
 from flask import g, current_app
+from controller.util import make_tier_map
 from app.api.response import response_200, bad_request, not_found
 from app.api.decorator import timer, login_required
 from model.mongodb import User, Problem, SolveLog, Interact
 from flask_validation_extended import Json, Validator, Route, Query, Min, Max
-from controller.util import get_random_index, get_tier, make_tier_map
 from controller.topic_predictor import sort_problems_by_accuracy
 from controller.hot_problem import (
     get_similar_problems,
@@ -69,7 +69,7 @@ def get_curriculum(
     predictor = current_app.topic_predictor
     #Hot Problem이 아닌 경우 not found
     if (
-        'problemNumber' not in result.keys() or
+        'problemNumber' not in result or
         not predictor.is_in_dict(str(result['problemNumber']))
     ):
         return not_found
@@ -112,24 +112,20 @@ def submit_problem(
 @timer
 def get_hot_problems(
     feed=Query(str),
-    count=Query(int, optional=True, rules=[Min(1), Max(20)])
+    count=Query(int, default=10, rules=[Min(1), Max(20)])
 ):
     """핫 유저 문제 반환"""
-    user = User(current_app.db).get_userinfo_simple(
-        user_oid=g.user_oid
-    )
     if feed == 'similar':
-        data = get_similar_problems(count)
+        data = get_similar_problems(current_app.db, g.user_id, count)
     elif feed == 'click':
-        data = get_click_problems(count)
-    elif feed == 'vulerable':
-        data = get_vulnerable_problems(count)
+        data = get_click_problems(current_app.db, g.user_id, count)
+    elif feed == 'vulnerable':
+        data = get_vulnerable_problems(current_app.db, g.user_id, count)
     elif feed == 'unfamiliar':
-        data = get_unfamiliar_problems(count)
+        data = get_unfamiliar_problems(current_app.db, g.user_id, count)
     else:
         return bad_request('not supported feed.')
     
-    print([i['problemNumber'] for i in data])
     return response_200(data)
 
 
@@ -143,7 +139,7 @@ def get_hot_problems(
 @Validator(bad_request)
 @login_required
 @timer
-def get_often_wrong_problems(
+def get_cold_problems(
     feed=Query(str),
     count=Query(int, optional=True, rules=[Min(1), Max(20)])
 ):

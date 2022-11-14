@@ -26,13 +26,13 @@ def init_app(app: Flask):
         ):
             body = request.get_json(silent=True) or dict(request.form)
 
-            app.logger.warning(
-                "\n!!! SLOW API DETECTED !!!\n" 
-                f"ip: {request.remote_addr}\n" 
-                f"url: {request.full_path}\n"
-                f"body: {body}\n"
-                f"slow time: {g.process_time}\n"
-            )
+            # app.logger.warning(
+            #     "\n!!! SLOW API DETECTED !!!\n" 
+            #     f"ip: {request.remote_addr}\n" 
+            #     f"url: {request.full_path}\n"
+            #     f"body: {body}\n"
+            #     f"slow time: {g.process_time}\n"
+            # )
 
         # API Logging
         if config['API_LOGGING']:

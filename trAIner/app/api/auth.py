@@ -45,14 +45,20 @@ def sign_in(
         {   
             'msg': 'success',
             'result':{
-                'refresh_token': create_refresh_token(user_oid)
+                'refresh_token': create_refresh_token({
+                    'user_oid': user_oid,
+                    'user_id': id
+                })
             }
         },
         status=200
     )
     set_access_cookies(
         response=resp,
-        encoded_access_token=create_access_token(user_oid),
+        encoded_access_token=create_access_token({
+            'user_oid': user_oid,
+            'user_id': id
+        }),
         max_age=current_app.config['COOKIE_MAX_AGE'] if isPersist else 1
     )
     return resp
@@ -86,14 +92,20 @@ def sign_up(
         {
             'msg': 'created',
             'result':{
-                'refresh_token': create_refresh_token(user_oid)
+                'refresh_token': create_refresh_token({
+                    'user_oid': user_oid,
+                    'user_id': id
+                })
             }
         },
         status=201
     )
     set_access_cookies(
         response=resp,
-        encoded_access_token=create_access_token(user_oid),
+        encoded_access_token=create_access_token({
+            'user_oid': user_oid,
+            'user_id': id
+        }),
         max_age=1
     )
     return resp
@@ -115,15 +127,15 @@ def sign_out():
 @timer
 def auth_token_refresh():
     """JWT Token Refresh"""
-    user_oid = get_jwt_identity()
+    user_identity = get_jwt_identity()
     resp = make_resp(
         {
             'msg': 'success',
             'result': {
-                'refresh_token': create_refresh_token(user_oid)
+                'refresh_token': create_refresh_token(user_identity)
             }
         },
         status=200
     )
-    set_access_cookies(resp, create_access_token(user_oid))
+    set_access_cookies(resp, create_access_token(user_identity))
     return resp

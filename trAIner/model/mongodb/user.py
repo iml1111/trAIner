@@ -67,4 +67,9 @@ class User(Model):
             }
         )
     
-    
+    def get_userinfo_simple_with_id(self, user_id: str):
+        """user_id를 통한 간단한 user 정보 반환 """
+        return self.col.find_one(
+            {'userId': user_id},
+            {'userNumber': 1}
+        )
