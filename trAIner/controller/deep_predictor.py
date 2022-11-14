@@ -135,7 +135,6 @@ class DeepPredictor:
         return float(y[0][0])
 
 
-
 if __name__ == '__main__':
     from config import config
 

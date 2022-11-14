@@ -52,3 +52,22 @@ class MasterConfig(Model):
                 }
             }
         )
+
+    def get_config(self, config_type: str):
+        return self.col.find_one(
+            {'config_type': config_type},
+            {'value': 1}
+        )
+
+    def set_config(self, config_type: str, value):
+        self.col.update_one(
+            {'config_type': config_type},
+            {
+                '$set': {
+                    'config_type': config_type,
+                    'value': value,
+                    'updated_at': datetime.now()
+                }
+            },
+            upsert=True
+        )
