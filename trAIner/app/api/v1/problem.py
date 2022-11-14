@@ -5,9 +5,11 @@ from flask import g, jsonify, current_app
 from app.api.response import response_200, bad_request, not_found
 from app.api.decorator import timer, login_required
 from model.mongodb import User, Problem, SolveLog
-from controller.topic_predictor import TopicPredictor
 from flask_validation_extended import Json, Validator, Route, Query, Min, Max
-from app.api.validation import ObjectIdValid
+from controller.topic_predictor import (
+    TopicPredictor,
+    sort_problems_by_accuracy
+)
 
 
 @api.route('/problems/me', methods=['GET'])
@@ -35,12 +37,11 @@ def get_my_solve_log(
 @login_required
 @timer
 def get_problem_detail(
-    problem_id=Route(str, rules=[ObjectIdValid()])
+    problem_id=Route(str)
 ):
     """단일 문제 반환"""
-    problem_oid = ObjectId(problem_id)
     problem = Problem(current_app.db).get_problem_info(
-        pro_id=problem_oid
+        pro_id=problem_id
     )
     if not problem:
         return not_found
@@ -52,13 +53,12 @@ def get_problem_detail(
 @login_required
 @timer
 def get_curriculum(
-    problem_id=Route(str, rules=[ObjectIdValid()]),
+    problem_id=Route(str),
     count=Query(int, optional=True, rules=[Min(1), Max(20)])
 ):
     """동적 커리큘럼 목록 반환"""
-    problem_oid = ObjectId(problem_id)
     result = Problem(current_app.db).get_problem_number(
-        pro_id=problem_oid
+        pro_id=problem_id
     )
     if not result:
         return not_found
@@ -81,14 +81,7 @@ def get_curriculum(
     problems = Problem(current_app.db).get_problem_info_with_numbers(
         pro_numbers=problem_numbers
     )
-    data = []
-    for i in items:
-        for problem in problems:
-            #모델을 통해 얻은 정확도 삽입
-            if int(i[0]) == problem['problemNumber']:
-                problem['modelAccuracy'] = i[1]
-                data.append(problem)
-                break    
+    data =  sort_problems_by_accuracy(items, problems)
     return response_200(data)
 
 

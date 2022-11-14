@@ -58,6 +58,19 @@ class TopicPredictor:
         return word in self.model.wv.key_to_index
 
 
+def sort_problems_by_accuracy(items, problems):
+    """토픽 모델의 정확도를 기준으로 문제를 정렬"""
+    data = []
+    for i in items:
+        for problem in problems:
+            #모델을 통해 얻은 정확도 삽입
+            if int(i[0]) == problem['problemNumber']:
+                problem['modelAccuracy'] = i[1]
+                data.append(problem)
+                break
+    return data
+
+
 if __name__ == '__main__':
     from config import config
 

@@ -16,5 +16,3 @@ def get_my_info():
         user_oid=g.user_oid
     )
     return response_200(user)
-
-

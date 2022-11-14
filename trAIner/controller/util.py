@@ -1,7 +1,8 @@
 from string import ascii_letters
-from random import choice
+from random import choice, sample
 from faker import Faker
 from faker.providers import internet
+from config import config
 
 def get_fake():
     fake = Faker('ko_KR')
@@ -33,5 +34,31 @@ def get_random_id():
     return "".join(rand_string)
 
 
+def get_random_index(
+    length: int = 50,
+    count: int = 10
+):
+    """Get random index"""
+    return sample(range(length), count)
+
+
+def get_tier(tier: str):
+    if tier == 'bronze':
+        return [1,2,3,4,5]
+    elif tier == 'silver':
+        return [6,7,8,9,10]
+    elif tier == 'gold':
+        return [11,12,13,14,15]
+    else:
+        return RuntimeError('Invalid Tier')
+
+
+def make_tier_map():
+    tiers = config.AVAILABLE_TIER
+    result = {}
+    for i in tiers:
+        result[i] = None
+    return tiers, result
+
 if __name__ == '__main__':
-    pass
+    print(get_random_index(count=1))

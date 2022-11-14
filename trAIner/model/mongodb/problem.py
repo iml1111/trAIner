@@ -2,6 +2,7 @@ from datetime import datetime
 from pymongo import IndexModel, DESCENDING, ASCENDING
 from .base import Model
 from bson import ObjectId
+from controller.util import get_tier
 
 
 class Problem(Model):
@@ -56,11 +57,23 @@ class Problem(Model):
         return self.col.insert_one(self.schemize(document))
 
 
-    def get_problem_info(self, pro_id: ObjectId):
+    def get_all_problems(self):
+        """모든 문제(핫 문제) 반환"""
+        return list(self.col.find(
+            {'isHotProblem': True},
+            {
+                'problemId': 1,
+                'problemNumber': 1
+            }
+        ))
+
+
+    def get_problem_info(self, pro_id: str):
         """문제 정보 반환"""
         return self.col.find_one(
-            {'_id': pro_id},
+            {'problemId': pro_id},
             {
+                'problemId': 1,
                 'titleKo': 1,
                 'correctPeople': 1,
                 'timeLimit': 1,
@@ -81,6 +94,7 @@ class Problem(Model):
         return list(self.col.find(
             {'problemNumber': {'$in': pro_numbers}},
             {
+                'problemId': 1,
                 'titleKo': 1,
                 'correctPeople': 1,
                 'timeLimit': 1,
@@ -96,9 +110,29 @@ class Problem(Model):
         ))
     
 
-    def get_problem_number(self, pro_id: ObjectId):
+    def get_problem_number(self, pro_id: str):
         """문제 번호 반환"""
         return self.col.find_one(
-            {'_id': pro_id},
+            {'problemId': pro_id},
             {'problemNumber': 1}
         )
+    
+
+    def get_problem_number_many(self, pro_ids: list):
+        """문제 번호 리스트 반환"""
+        return list(self.col.find(
+            {'problemId': {'$in': pro_ids}},
+            {'problemNumber': 1}
+        ))
+
+    
+    def get_problem_number_by_tier(self, tier: str):
+        """난이도별 문제 리스트 반환"""
+        levels = get_tier(tier)
+        return list(self.col.find(
+            {
+                'isHotProblem': True,
+                'level': {'$in': levels}
+            },
+            {'problemNumber': 1}
+        ))

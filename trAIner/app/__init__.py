@@ -12,6 +12,8 @@ from app.api.v1 import api_v1 as api_v1_bp
 from app.api.auth import api as auth_bp
 from model import register_connection_pool
 from controller.ctr_predictor import CTRPredictor
+from controller.deep_predictor import DeepPredictor
+from controller.topic_predictor import TopicPredictor
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
@@ -50,6 +52,12 @@ def create_flask_app(config):
     # Model Controller import
     app.ctr_predictor = CTRPredictor(
         config.CTR_MODEL_PATH
+    )
+    app.deep_predictor = DeepPredictor(
+        config.DEEP_MODEL_PATH
+    )
+    app.topic_predictor = TopicPredictor(
+        config.TOPIC_MODEL_PATH
     )
 
     app.register_blueprint(error_bp)

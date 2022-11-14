@@ -29,6 +29,8 @@ class Config:
     JWT_SESSION_COOKIE = False
     COOKIE_MAX_AGE = 60 * 60 * 24 * 3
 
+    #사용가능한 문제 난이도
+    AVAILABLE_TIER = ['bronze', 'silver', 'gold']
     # Model Paths
     CTR_MODEL_PATH = os.environ['CTR_MODEL_PATH']
     DEEP_MODEL_PATH = os.environ['DEEP_MODEL_PATH']

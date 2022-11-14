@@ -29,6 +29,13 @@ class User(Model):
     def insert_user(self, document):
         """user 생성"""
         return self.col.insert_one(self.schemize(document))
+    
+    def get_all_users(self):
+        """모든 유저(핫 유저) 반환"""
+        return list(self.col.find(
+            {'isHotUser': True},
+            {'userNumber': 1}
+        ))
 
     def get_password_with_id(self, user_id: str):
         """user_id를 통한 PW 조회"""

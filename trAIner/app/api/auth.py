@@ -44,7 +44,9 @@ def sign_in(
     resp = make_resp(
         {   
             'msg': 'success',
-            'refresh_token': create_refresh_token(user_oid)
+            'result':{
+                'refresh_token': create_refresh_token(user_oid)
+            }
         },
         status=200
     )
@@ -83,7 +85,9 @@ def sign_up(
     resp = make_resp(
         {
             'msg': 'created',
-            'refresh_token': create_refresh_token(user_oid)
+            'result':{
+                'refresh_token': create_refresh_token(user_oid)
+            }
         },
         status=201
     )
@@ -115,7 +119,9 @@ def auth_token_refresh():
     resp = make_resp(
         {
             'msg': 'success',
-            'refresh_token': create_refresh_token(user_oid)
+            'result': {
+                'refresh_token': create_refresh_token(user_oid)
+            }
         },
         status=200
     )
