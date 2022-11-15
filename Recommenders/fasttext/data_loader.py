@@ -66,8 +66,8 @@ def load_corpora():
 
 
 if __name__ == '__main__':
-    #refine_corpora_v1()
+    refine_corpora_v1()
     
-    from pprint import pprint
-    sequences = load_corpora()
-    pprint(sequences[:2])
+    # from pprint import pprint
+    # sequences = load_corpora()
+    # pprint(sequences[:2])

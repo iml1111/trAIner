@@ -32,6 +32,16 @@ jobs:
       run: |
         aws s3 cp ${{ secrets.S3_CTR_MODEL_PATH }} trAIner/
     
+    - name: Download Production deep file from S3
+      id: download-deep-from-s3
+      run: |
+        aws s3 cp ${{ secrets.S3_DEEP_MODEL_PATH }} trAIner/
+    
+    - name: Download Production topic file from S3
+      id: download-topic-from-s3
+      run: |
+        aws s3 cp ${{ secrets.S3_TOPIC_MODEL_PATH }} trAIner/
+    
     - name: Login to DockerHub
       uses: docker/login-action@v1
       with:

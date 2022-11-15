@@ -4,6 +4,10 @@ __pycache__/
 *$py.class
 .idea/
 ctr_model.npy
+model.pth.20
+topic_model.w2v
+vec.tsv
+meta.tsv
 # C extensions
 *.so
 .idea/
