@@ -7,6 +7,7 @@ from app.api.decorator import timer, login_required
 from model.mongodb import User, Problem, SolveLog, Interact
 from flask_validation_extended import Json, Validator, Route, Query, Min, Max
 from controller.topic_predictor import sort_problems_by_accuracy
+from controller.tag import get_tag_name
 from controller.hot_problem import (
     get_similar_problems,
     get_click_problems,
@@ -35,6 +36,42 @@ def get_my_solve_log(
     return response_200(solve_logs)
 
 
+@api.route('/problems/me/latest', methods=['GET'])
+@Validator(bad_request)
+@login_required
+@timer
+def get_my_latest_solve_log():
+    """내가 가장 최근에 푼 문제 반환"""
+    s = SolveLog(current_app.db).get_latest_solve_log(
+        user_id=g.user_id,
+    )
+    p = Problem(current_app.db).get_problem_info(
+        pro_id=s['problemId']
+    )
+    tags = get_tag_name(p['tags'])
+
+    return response_200({
+    'userId': s['userId'],
+    'problemId': s['problemId'],
+    'result': s['result'],
+    'executionTime': s['executionTime'],
+    'code': s['code'],
+    'titleKo': p['titleKo'],
+    'level': p['level'],
+    'tags': tags,
+    'correctPeople': p['correctPeople'],
+    'timeLimit': p['timeLimit'],
+    'memoryLimit': p['memoryLimit'],
+    'description': p['description'],
+    'input': p['input'],
+    'output': p['output'],
+    'example': p['example'],
+    'limit': p['limit'],
+    'note': p['note'],
+    'created_at': s['created_at']
+})
+
+
 @api.route('/problems/<problem_id>', methods=['GET'])
 @Validator(bad_request)
 @login_required
@@ -48,6 +85,7 @@ def get_problem_detail(
     )
     if not problem:
         return not_found
+    problem['tags'] = get_tag_name(problem['tags'])
     return response_200(problem)
 
 
@@ -57,7 +95,7 @@ def get_problem_detail(
 @timer
 def get_curriculum(
     problem_id=Route(str),
-    count=Query(int, optional=True, rules=[Min(1), Max(20)])
+    count=Query(int, default=10, rules=[Min(1), Max(20)])
 ):
     """동적 커리큘럼 목록 반환"""
     result = Problem(current_app.db).get_problem_number(
@@ -78,12 +116,16 @@ def get_curriculum(
     #토픽 모델을 통해 가까운 문제들 선별
     items = predictor.get_similar_items(
         str(result['problemNumber']),
-        num=count if count else 10
+        num=count
     )
     problem_numbers = [int(i[0]) for i in items]
     problems = Problem(current_app.db).get_problem_info_with_numbers(
         pro_numbers=problem_numbers
     )
+    #태그 이름 변환
+    for p in problems:
+        p['tags'] = get_tag_name(p['tags'])
+
     data =  sort_problems_by_accuracy(items, problems)
     return response_200(data)
 
@@ -125,9 +167,10 @@ def get_hot_problems(
         data = get_unfamiliar_problems(current_app.db, g.user_id, count)
     else:
         return bad_request('not supported feed.')
-    
+    #태그 이름 변환
+    for p in data:
+        p['tags'] = get_tag_name(p['tags'])
     return response_200(data)
-
 
 
 

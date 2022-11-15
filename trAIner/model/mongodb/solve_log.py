@@ -38,3 +38,13 @@ class SolveLog(Model):
             .skip(skip)
             .limit(limit)
         )
+    
+
+    def get_latest_solve_log(self, user_id: str):
+        """특정 유저가 가장 최근에 푼 기록 반환"""
+        return self.col.find(
+            {
+                'userId': user_id,
+                'result': True
+            }
+        ).sort('created_at', DESCENDING)[0]

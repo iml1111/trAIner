@@ -75,6 +75,8 @@ class Problem(Model):
             {
                 'problemId': 1,
                 'titleKo': 1,
+                'level': 1,
+                'tags': 1,
                 'correctPeople': 1,
                 'timeLimit': 1,
                 'memoryLimit': 1,
@@ -87,6 +89,28 @@ class Problem(Model):
                 'problemNumber': 1
             }
         )
+    
+    def get_problem_info_many(self, pro_ids: list):
+        """문제 정보 여러개 반환"""
+        return list(self.col.find(
+            {'problemId': {"$in": pro_ids}},
+            {
+                'problemId': 1,
+                'titleKo': 1,
+                'level': 1,
+                'tags': 1,
+                'correctPeople': 1,
+                'timeLimit': 1,
+                'memoryLimit': 1,
+                'description': 1,
+                'input': 1,
+                'output': 1,
+                'example': 1,
+                'limit': 1,
+                'note': 1,
+                'problemNumber': 1
+            }
+        ))
 
     
     def get_problem_info_with_numbers(self, pro_numbers: list):
@@ -96,6 +120,8 @@ class Problem(Model):
             {
                 'problemId': 1,
                 'titleKo': 1,
+                'level': 1,
+                'tags': 1,
                 'correctPeople': 1,
                 'timeLimit': 1,
                 'memoryLimit': 1,
