@@ -1,18 +1,23 @@
 from . import api_v1 as api
 from config import config
 from flask import g, current_app
-from controller.util import make_tier_map
 from app.api.response import response_200, bad_request, not_found
 from app.api.decorator import timer, login_required
 from model.mongodb import User, Problem, SolveLog, Interact
 from flask_validation_extended import Json, Validator, Route, Query, Min, Max
 from controller.topic_predictor import sort_problems_by_accuracy
-from controller.tag import get_tag_name
+from controller.tag import get_tag_name, tag_map
 from controller.hot_problem import (
-    get_similar_problems,
-    get_click_problems,
-    get_vulnerable_problems,
-    get_unfamiliar_problems
+    get_hot_similar_problems,
+    get_hot_click_problems,
+    get_hot_vulnerable_problems,
+    get_hot_unfamiliar_problems
+)
+from controller.cold_problem import (
+    get_cold_vulnerable_problems,
+    get_cold_popular_problems,
+    get_cold_algorithm_problems,
+    get_cold_click_problems
 )
 
 
@@ -41,13 +46,19 @@ def get_my_solve_log(
 @login_required
 @timer
 def get_my_latest_solve_log():
-    """내가 가장 최근에 푼 문제 반환"""
+    """내가 가장 최근에 맞춘 문제 반환"""
     s = SolveLog(current_app.db).get_latest_solve_log(
         user_id=g.user_id,
     )
+    if not s:
+        return not_found
+    s = s[0]
     p = Problem(current_app.db).get_problem_info(
         pro_id=s['problemId']
     )
+    if not p:
+        return not_found
+
     tags = get_tag_name(p['tags'])
 
     return response_200({
@@ -85,6 +96,16 @@ def get_problem_detail(
     )
     if not problem:
         return not_found
+
+    #최근에 푼 기록이 있으면 코드 삽입
+    problem['code'] = None
+    solve_log = SolveLog(current_app.db).get_latest_solve_log_by_problem_id(
+        user_id=g.user_id,
+        pro_id=problem_id
+    )
+    if solve_log:
+        problem['code'] = solve_log[0]['code']
+
     problem['tags'] = get_tag_name(problem['tags'])
     return response_200(problem)
 
@@ -158,115 +179,54 @@ def get_hot_problems(
 ):
     """핫 유저 문제 반환"""
     if feed == 'similar':
-        data = get_similar_problems(current_app.db, g.user_id, count)
+        data = get_hot_similar_problems(current_app.db, g.user_id, count)
     elif feed == 'click':
-        data = get_click_problems(current_app.db, g.user_id, count)
+        data = get_hot_click_problems(current_app.db, g.user_id, count)
     elif feed == 'vulnerable':
-        data = get_vulnerable_problems(current_app.db, g.user_id, count)
+        data = get_hot_vulnerable_problems(current_app.db, g.user_id, count)
     elif feed == 'unfamiliar':
-        data = get_unfamiliar_problems(current_app.db, g.user_id, count)
+        data = get_hot_unfamiliar_problems(current_app.db, g.user_id, count)
     else:
         return bad_request('not supported feed.')
     #태그 이름 변환
     for p in data:
         p['tags'] = get_tag_name(p['tags'])
+
+    print([d['problemId'] for d in data])
     return response_200(data)
 
 
-
-
-"""
-밑은 아직 미구현
-"""
-@api.route('/problems/cold/often_wrong', methods=['GET'])
+@api.route('/problems/cold', methods=['GET'])
 @Validator(bad_request)
 @login_required
 @timer
 def get_cold_problems(
     feed=Query(str),
-    count=Query(int, optional=True, rules=[Min(1), Max(20)])
+    content=Query(str, optional=True, rules=[]),
+    count=Query(int, default=10, rules=[Min(1), Max(20)])
 ):
     """콜드 유저 문제 반환"""
-    
-    if feed == 'often_wrong':
-        pass
+    if feed == 'vulnerable':
+        data = get_cold_vulnerable_problems(current_app.db, count)
     elif feed == 'popular':
-        pass
+        data = get_cold_popular_problems(current_app.db, count)
+    elif feed == 'click':
+        data = get_cold_click_problems(current_app.db, count)
+    elif feed == 'algorithm':
+        if not content:
+            return bad_request('content is needed.')
+        if content not in tag_map:
+            return  bad_request('content is not supported.')
+        data = get_cold_algorithm_problems(current_app.db, content, count)
     else:
         return bad_request('not supported feed.')
 
-
-
-@api.route('/problems/cold/often_wrong', methods=['GET'])
-@Validator(bad_request)
-@login_required
-@timer
-def get_often_wrong_problems(
-    count=Query(int, optional=True, rules=[Min(1), Max(20)])
-):
-    """핫 유저들이 많이 틀리는 문제 반환"""
+    #태그 이름 변환
+    for p in data:
+        p['tags'] = get_tag_name(p['tags'])
     
-    """
-    핫 유저에 대하여 각 난이도별로 취약점 평균 수치가 높은 문제를 집단으로 수집하여
-    집단에서 일정 부분 랜덤으로 발췌하여 추천 진행
-    """
-    tiers = config.AVAILABLE_TIER
-    result = {}
-    for i in tiers:
-        result[i] = None
-    for tier in tiers:
-        result[tier] = Problem(current_app.db).get_problem_number_by_tier(
-            tier=tier
-        )
+    print([d['problemId'] for d in data])
+    return response_200(data)
 
-    #TODO: 이 부분은 연산량이 많아서 성능저하가 우려됨.. 캐싱?
-    #핫 유저
-    users = User(current_app.db).get_all_users()
-    #취약점 모델
-    predictor = current_app.deep_predictor
-
-    #난이도별로 모든 핫 유저에 대하여 취약점 계산
-    for tier in tiers:
-        for user in users:
-            vulnerable = []
-            problems = result[tier]
-            for p in problems:
-                vulnerable.append(
-                    predictor.predict(user['userNumber'], p['problemNumber'])
-                )
-            
-
-    return response_200()
-
-
-@api.route('/problems/cold/popular', methods=['GET'])
-@Validator(bad_request)
-@login_required
-@timer
-def get_popular_problems(
-    count=Query(int, optional=True, rules=[Min(1), Max(20)])
-):
-    """유저들이 많이 푼 문제 반환"""
-
-    """많이 해결한건지, 아니면 많이 시도한건지를 정확히 해야할듯"""
-    tiers, result = make_tier_map()
-    
-    # for tier in tiers:
-    #     result[tier] = Problem(current_app.db).get_problem_number_by_tier(
-    #         tier=tier
-    #     )
-    
-    problems = Problem(current_app.db).get_all_problems()
-    
-
-    #핫 유저가 푼 핫 문제 interact 전체
-    interact = Interact(current_app.db).get_all_interact()
-
-    for tier in tiers:
-        problems = result[tier]
-        
-
-            
-
-
-    return response_200()
+# TODO: cold api중 algorithm은 추천 문제들이 바뀌지 않음
+# interact가 가장 많은 문제를 기준으로 추천해서 항상 같은 문제가 들어감

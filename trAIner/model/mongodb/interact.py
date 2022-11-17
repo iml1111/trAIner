@@ -30,7 +30,8 @@ class Interact(Model):
             '__version__': self.VERSION,
         }
     
-
+    #HotInteract의 userId 와 problemId는 원래 데이터의 userNumber, problemNumber임.
+    
     def get_interact_cnt(self):
         """interact 데이터 반환"""
         return list(self.col.aggregate([

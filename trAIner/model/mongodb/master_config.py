@@ -71,3 +71,43 @@ class MasterConfig(Model):
             },
             upsert=True
         )
+
+
+    def get_popular(self):
+        return self.col.find_one(
+            {'key': 'popular'},
+            {
+                '_id': 0,
+                'value': 1
+            }
+        )
+
+    
+    def get_vulnerable(self):
+        return self.col.find_one(
+            {'key': 'vulnerable'},
+            {
+                '_id': 0,
+                'value': 1
+            }
+        )
+
+    
+    def get_algorithm(self):
+        return self.col.find_one(
+            {'key': 'algorithm'},
+            {
+                '_id': 0,
+                'value': 1
+            }
+        )
+
+    
+    def get_click(self):
+        return self.col.find_one(
+            {'key': 'click'},
+            {
+                '_id': 0,
+                'value': 1
+            }
+        )

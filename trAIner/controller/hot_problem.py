@@ -6,7 +6,7 @@ from controller.topic_predictor import sort_problems_by_accuracy
 from pymongo import MongoClient
 
 
-def get_similar_problems(db: MongoClient, user_id: str, count: int):
+def get_hot_similar_problems(db: MongoClient, user_id: str, count: int):
     """최근에 푼 유형과 비슷한 문제 반환"""
     latest_problems = SolveLog(db).get_solve_log(
         user_id=user_id,
@@ -35,7 +35,7 @@ def get_similar_problems(db: MongoClient, user_id: str, count: int):
     return data
 
 
-def get_click_problems(db: MongoClient, user_id: str, count: int):
+def get_hot_click_problems(db: MongoClient, user_id: str, count: int):
     """시도할 가능성이 높은 문제 반환"""
     user = User(db).get_userinfo_simple_with_id(
         user_id=user_id
@@ -66,7 +66,7 @@ def get_click_problems(db: MongoClient, user_id: str, count: int):
     return data
 
 
-def get_vulnerable_problems(db: MongoClient, user_id: str, count: int):
+def get_hot_vulnerable_problems(db: MongoClient, user_id: str, count: int):
     """틑릴 가능성이 높은 문제 반환"""
     user = User(db).get_userinfo_simple_with_id(
         user_id=user_id
@@ -96,7 +96,7 @@ def get_vulnerable_problems(db: MongoClient, user_id: str, count: int):
     return data
 
 
-def get_unfamiliar_problems(db:MongoClient, user_id: str, count: int):
+def get_hot_unfamiliar_problems(db:MongoClient, user_id: str, count: int):
     """익숙하지 않은 유형의 문제 반환"""
     user = User(db).get_userinfo_simple_with_id(
         user_id=user_id
