@@ -59,7 +59,7 @@ def sign_in(
             'user_oid': user_oid,
             'user_id': id
         }),
-        max_age=current_app.config['COOKIE_MAX_AGE'] if isPersist else 1
+        max_age=current_app.config['COOKIE_MAX_AGE'] if isPersist else None
     )
     return resp
 
@@ -106,7 +106,6 @@ def sign_up(
             'user_oid': user_oid,
             'user_id': id
         }),
-        max_age=1
     )
     return resp
 
