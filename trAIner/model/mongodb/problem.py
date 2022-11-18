@@ -50,7 +50,7 @@ class Problem(Model):
             'updated_at': datetime.now(),
             '__version__': self.VERSION,
         }
-        
+    
 
     def insert_problem(self, document):
         """문제 생성"""
@@ -63,7 +63,8 @@ class Problem(Model):
             {'isHotProblem': True},
             {
                 'problemId': 1,
-                'problemNumber': 1
+                'problemNumber': 1,
+                'level': 1
             }
         ))
 
@@ -71,7 +72,10 @@ class Problem(Model):
     def get_problem_info(self, pro_id: str):
         """문제 정보 반환"""
         return self.col.find_one(
-            {'problemId': pro_id},
+            {
+                'problemId': pro_id,
+                'isHotProblem': True
+            },
             {
                 'problemId': 1,
                 'titleKo': 1,

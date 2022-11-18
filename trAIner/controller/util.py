@@ -3,6 +3,8 @@ from random import choice, sample
 from faker import Faker
 from faker.providers import internet
 from config import config
+from collections import defaultdict
+
 
 def get_fake():
     fake = Faker('ko_KR')
@@ -53,12 +55,24 @@ def get_tier(tier: str):
         return RuntimeError('Invalid Tier')
 
 
+def get_tier_by_level(level: int):
+    if level in [1,2,3,4,5]:
+        return 'bronze'
+    elif level in [6,7,8,9,10]:
+        return 'silver'
+    elif level in [11,12,13,14,15]:
+        return 'gold'
+    else:
+        return RuntimeError('Invalid Level')
+
+
 def make_tier_map():
     tiers = config.AVAILABLE_TIER
     result = {}
     for i in tiers:
-        result[i] = None
+        result[i] = defaultdict(int)
     return tiers, result
+
 
 if __name__ == '__main__':
     print(get_random_index(count=1))
