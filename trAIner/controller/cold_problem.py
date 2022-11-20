@@ -3,6 +3,7 @@ from controller.util import get_random_index
 from model.mongodb import Problem, MasterConfig
 from controller.topic_predictor import sort_problems_by_accuracy
 from pymongo import MongoClient
+from random import shuffle
 
 #기본적으로 콜드 스타트 유저들은 데이터가 부족하므로 핫 유저들의 데이터를 토대로 추천 진행
 
@@ -23,6 +24,7 @@ def get_cold_vulnerable_problems(db: MongoClient, count: int):
     data = Problem(db).get_problem_info_many(
         pro_ids=problem_ids
     )
+    shuffle(data)
     return data
 
 
@@ -43,6 +45,7 @@ def get_cold_click_problems(db: MongoClient, count: int):
     data = Problem(db).get_problem_info_many(
         pro_ids=problem_ids
     )
+    shuffle(data)
     return data
     
 
@@ -63,6 +66,7 @@ def get_cold_popular_problems(db: MongoClient, count: int):
     data = Problem(db).get_problem_info_many(
         pro_ids=problem_ids
     )
+    shuffle(data)
     return data
 
 

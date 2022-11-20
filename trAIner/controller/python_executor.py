@@ -5,7 +5,7 @@ from subprocess import TimeoutExpired
 def execute(script: str, input_str: str, timeout: int = 10) -> str:
 	"""Execute the given script with the given input and return the output."""
 	output = subprocess.run(
-		["python3", "-c", script],
+		["python", "-c", script],
 		input=input_str,
 		capture_output=True,
 		encoding="utf-8",
