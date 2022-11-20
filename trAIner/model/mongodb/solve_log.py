@@ -27,6 +27,12 @@ class SolveLog(Model):
             'created_at': datetime.now(),
             '__version__': self.VERSION,
         }
+
+    
+    def insert_solve_log(self, document: dict):
+        return self.col.insert_one(
+            self.schemize(document)
+        )
     
 
     def get_solve_log(self, user_id: str, skip: int, limit: int):

@@ -57,6 +57,19 @@ class Problem(Model):
         return self.col.insert_one(self.schemize(document))
 
 
+    def update_problem(self, pro_id: str, document: dict):
+        """문제 수정"""
+        self.col.update_one(
+            {'problemId': pro_id},
+            {
+                '$set': {
+                    **document,
+                    'updated_at': datetime.now()
+                }
+            }
+        )
+
+
     def get_all_problems(self):
         """모든 문제(핫 문제) 반환"""
         return list(self.col.find(

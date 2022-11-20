@@ -30,6 +30,19 @@ class User(Model):
         """user 생성"""
         return self.col.insert_one(self.schemize(document))
     
+
+    def update_user(self, user_oid: ObjectId, document: dict):
+        self.col.update_one(
+            {'_id': user_oid},
+            {
+                '$set': {
+                    **document,
+                    'updated_at': datetime.now()
+                }
+            }
+        )
+
+    
     def get_all_users(self):
         """모든 유저(핫 유저) 반환"""
         return list(self.col.find(
@@ -51,6 +64,7 @@ class User(Model):
             {
                 'userId': 1,
                 'name': 1,
+                'count': 1,
                 'isHotUser': 1,
                 'created_at': 1,
                 'updated_at': 1

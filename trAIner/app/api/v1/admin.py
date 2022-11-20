@@ -94,3 +94,24 @@ def put_topic_similarity_api(
     """Topic Model 유사도 가중치 조절"""
     MasterConfig().set_config('topic_similarity', value)
     return response_200()
+
+
+@api.get('/admin/cold-to-hot')
+@Validator(bad_request)
+@timer
+def get_cold_to_hot_api():
+    """Cold to Hot 유저 변경 기준 조절"""
+    cold_to_hot = MasterConfig().get_config('cold_to_hot')
+    cold_to_hot = cold_to_hot['value'] if cold_to_hot else 10
+    return response_200(cold_to_hot or 10)
+
+
+@api.put('/admin/cold-to-hot')
+@Validator(bad_request)
+@timer
+def put_cold_to_hot_api(
+    value=Query(int)
+):
+    """Cold to Hot 유저 변경 기준 조절"""
+    MasterConfig().set_config('cold_to_hot', value)
+    return response_200()

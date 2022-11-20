@@ -3,9 +3,10 @@ from config import config
 from flask import g, current_app
 from app.api.response import response_200, bad_request, not_found
 from app.api.decorator import timer, login_required
-from model.mongodb import User, Problem, SolveLog, Interact
+from model.mongodb import User, Problem, SolveLog
 from flask_validation_extended import Json, Validator, Route, Query, Min, Max
 from controller.topic_predictor import sort_problems_by_accuracy
+from controller.python_executor import run_problem
 from controller.tag import get_tag_name, tag_map
 from controller.hot_problem import (
     get_hot_similar_problems,
@@ -126,15 +127,15 @@ def get_curriculum(
         return not_found
 
     predictor = current_app.topic_predictor
-    #Hot Problem이 아닌 경우 not found
+    # Hot Problem이 아닌 경우 not found
     if (
         'problemNumber' not in result or
         not predictor.is_in_dict(str(result['problemNumber']))
     ):
         return not_found
     
-    #문제 반환 개수 default = 10
-    #토픽 모델을 통해 가까운 문제들 선별
+    # 문제 반환 개수 default = 10
+    # 토픽 모델을 통해 가까운 문제들 선별
     items = predictor.get_similar_items(
         str(result['problemNumber']),
         num=count
@@ -160,8 +161,51 @@ def submit_problem(
     code=Json(str)
 ):
     """문제 제출/채점"""
-    return response_200()
+    problem = Problem(current_app.db).get_problem_info(
+        pro_id=problem_id
+    )
+    if not problem:
+        return not_found
+    
+    input = problem['example'][0]['sample_input']
+    output = problem['example'][0]['sample_output']
+    
+    result = run_problem(code, input, output)
 
+    SolveLog(current_app.db).insert_solve_log({
+        'userId': g.user_id,
+        'problemId': problem_id,
+        'result': result['result'],
+        'description': result['description'],
+        'executionTime': result['time'],
+        'code': code,
+        'problemNumber': problem['problemNumber']
+    })
+    
+    if result:
+        latest = SolveLog(current_app.db).get_latest_solve_log(
+            user_id=g.user_id
+        )
+        #맞춘 기록이 없을 경우, 문제 맞춘 인원 업데이트
+        if not latest:
+            Problem(current_app.db).update_problem(
+                pro_id=problem_id,
+                document={
+                    'correctPeople': problem['correctPeople'] + 1
+                }
+            )
+            user = User(current_app.db).get_userinfo(
+                user_oid=g.user_oid
+            )
+            #유저의 맞춘 문제 개수 갱신 및 cold -> hot으로 변경
+            User(current_app.db).update_user(
+                user_oid=g.user_oid,
+                document={
+                    'count': user['count'] + 1,
+                    'isHotUser': True if user['count'] + 1 >= 10 else user['isHotUser']
+                }
+            )
+    return response_200(result)
 
 
 """
@@ -192,7 +236,6 @@ def get_hot_problems(
     for p in data:
         p['tags'] = get_tag_name(p['tags'])
 
-    print([d['problemId'] for d in data])
     return response_200(data)
 
 
@@ -225,7 +268,6 @@ def get_cold_problems(
     for p in data:
         p['tags'] = get_tag_name(p['tags'])
     
-    print([d['problemId'] for d in data])
     return response_200(data)
 
 # TODO: cold api중 algorithm은 추천 문제들이 바뀌지 않음
