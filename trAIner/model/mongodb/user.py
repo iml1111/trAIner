@@ -35,8 +35,10 @@ class User(Model):
         self.col.update_one(
             {'_id': user_oid},
             {
-                **document,
-                'updated_at': datetime.now()
+                '$set': {
+                    **document,
+                    'updated_at': datetime.now()
+                }
             }
         )
 
