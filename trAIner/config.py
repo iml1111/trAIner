@@ -52,7 +52,7 @@ elif FLASK_CONFIG == 'production':
         DEBUG = False
         TESTING = False
         TIMER_OUTPUT = 'log'
-        JWT_COOKIE_CSRF_PROTECT = True
+        JWT_COOKIE_CSRF_PROTECT = False
         JWT_COOKIE_SECURE = True
 else:
     raise Exception("Flask Config not Selected.")
