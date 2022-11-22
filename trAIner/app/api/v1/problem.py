@@ -39,6 +39,8 @@ def get_my_solve_log(
         skip=skip,
         limit=limit
     )
+    for p in solve_logs:
+        p['tags'] = get_tag_name(p['tags'])
     return response_200(solve_logs)
 
 
@@ -117,7 +119,7 @@ def get_problem_detail(
 @timer
 def get_curriculum(
     problem_id=Route(str),
-    count=Query(int, default=10, rules=[Min(1), Max(20)])
+    count=Query(int, default=30, rules=Min(1))
 ):
     """동적 커리큘럼 목록 반환"""
     result = Problem(current_app.db).get_problem_number(
@@ -219,7 +221,7 @@ def submit_problem(
 @timer
 def get_hot_problems(
     feed=Query(str),
-    count=Query(int, default=10, rules=[Min(1), Max(20)])
+    count=Query(int, default=30, rules=Min(1))
 ):
     """핫 유저 문제 반환"""
     user = User(current_app.db).get_userinfo_simple(

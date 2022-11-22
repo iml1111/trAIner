@@ -21,7 +21,7 @@ class SolveLog(Model):
             'userId': None,
             'problemId': None,
             'result': None,
-            'description': None,
+            'resultInfo': None,
             'executionTime': None,
             'code': None,
             'created_at': datetime.now(),
