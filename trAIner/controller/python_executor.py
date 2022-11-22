@@ -21,6 +21,7 @@ def run_problem(code: str, input_str: str, output_str: str, timeout: int = 10):
         process_time = time()
         data = execute(code, input_str, timeout)
         process_time = time() - process_time
+        process_time = round(process_time * 1000)
         if data == output_str:
             result = True
             description = "맞았습니다!!"

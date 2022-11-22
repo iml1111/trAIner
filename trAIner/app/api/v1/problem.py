@@ -222,6 +222,13 @@ def get_hot_problems(
     count=Query(int, default=10, rules=[Min(1), Max(20)])
 ):
     """핫 유저 문제 반환"""
+    user = User(current_app.db).get_userinfo_simple(
+        user_oid=g.user_oid
+    )
+    #핫 유저가 아닌 경우 400
+    if not user['isHotUser']:
+        return bad_request('You are not hot user.')
+
     if feed == 'similar':
         data = get_hot_similar_problems(current_app.db, g.user_id, count)
     elif feed == 'click':
@@ -249,6 +256,13 @@ def get_cold_problems(
     count=Query(int, default=10, rules=[Min(1), Max(20)])
 ):
     """콜드 유저 문제 반환"""
+    user = User(current_app.db).get_userinfo_simple(
+        user_oid=g.user_oid
+    )
+    #콜드 유저가 아닌 경우 400
+    if user['isHotUser']:
+        return bad_request('You are not cold user.')
+
     if feed == 'vulnerable':
         data = get_cold_vulnerable_problems(current_app.db, count)
     elif feed == 'popular':
@@ -269,6 +283,3 @@ def get_cold_problems(
         p['tags'] = get_tag_name(p['tags'])
     
     return response_200(data)
-
-# TODO: cold api중 algorithm은 추천 문제들이 바뀌지 않음
-# interact가 가장 많은 문제를 기준으로 추천해서 항상 같은 문제가 들어감

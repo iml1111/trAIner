@@ -77,7 +77,8 @@ class User(Model):
             {'_id': user_oid},
             {
                 'userId': 1,
-                'userNumber': 1
+                'userNumber': 1,
+                'isHotUser': 1
             }
         )
     
