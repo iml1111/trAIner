@@ -253,13 +253,6 @@ def get_cold_problems(
     count=Query(int, default=10, rules=[Min(1), Max(20)])
 ):
     """콜드 유저 문제 반환"""
-    user = User(current_app.db).get_userinfo_simple(
-        user_oid=g.user_oid
-    )
-    #콜드 유저가 아닌 경우 400
-    if user['isHotUser']:
-        return bad_request('You are not cold user.')
-
     if feed == 'vulnerable':
         data = get_cold_vulnerable_problems(current_app.db, count)
     elif feed == 'popular':
