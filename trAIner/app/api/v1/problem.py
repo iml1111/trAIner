@@ -6,7 +6,7 @@ from app.api.decorator import timer, login_required
 from model.mongodb import User, Problem, SolveLog
 from flask_validation_extended import Json, Validator, Route, Query, Min, Max
 from controller.topic_predictor import sort_problems_by_accuracy
-from controller.python_executor import run_problem
+from controller.python_executor import run_problem, make_solve_log
 from controller.tag import get_tag_name, tag_map
 from controller.hot_problem import (
     get_hot_similar_problems,
@@ -173,23 +173,14 @@ def submit_problem(
     output = problem['example'][0]['sample_output']
     
     result = run_problem(code, input, output)
-
-    SolveLog(current_app.db).insert_solve_log({
-        'userId': g.user_id,
-        'problemId': problem_id,
-        'result': result['result'],
-        'description': result['description'],
-        'executionTime': result['time'],
-        'code': code,
-        'problemNumber': problem['problemNumber']
-    })
-    
-    if result:
-        latest = SolveLog(current_app.db).get_latest_solve_log(
-            user_id=g.user_id
+    #정답인 경우
+    if result['result']:
+        correct = SolveLog(current_app.db).get_correct_solve_log(
+            user_id=g.user_id,
+            pro_id=problem['problemId']
         )
         #맞춘 기록이 없을 경우, 문제 맞춘 인원 업데이트
-        if not latest:
+        if not correct:
             Problem(current_app.db).update_problem(
                 pro_id=problem_id,
                 document={
@@ -200,6 +191,7 @@ def submit_problem(
                 user_oid=g.user_oid
             )
             #유저의 맞춘 문제 개수 갱신 및 cold -> hot으로 변경
+            user['count'] = user['count'] if 'count' in user else 0
             User(current_app.db).update_user(
                 user_oid=g.user_oid,
                 document={
@@ -207,6 +199,9 @@ def submit_problem(
                     'isHotUser': True if user['count'] + 1 >= 10 else user['isHotUser']
                 }
             )
+    #SolveLog에 추가
+    data = make_solve_log(g.user_id, problem, code, result)
+    SolveLog(current_app.db).insert_solve_log(data)
     return response_200(result)
 
 

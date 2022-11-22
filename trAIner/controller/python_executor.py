@@ -39,9 +39,18 @@ def run_problem(code: str, input_str: str, output_str: str, timeout: int = 10):
     print(output_str.encode('utf-8'))
     return {
         'result': result,
-        'description': description,
-        'time': process_time if process_time else None
+        'resultInfo': description,
+        'executionTime': process_time if process_time else None
     }
+
+
+def make_solve_log(user_id: str, problem: dict, code: str, result: dict):
+    data = {
+        'userId': user_id,
+        'code': code
+    }
+    del problem['_id']
+    return {**data, **problem, **result}
 
 
 if __name__ == '__main__':

@@ -56,6 +56,17 @@ class SolveLog(Model):
         ).sort('created_at', DESCENDING))
     
 
+    def get_correct_solve_log(self, user_id: str, pro_id: str):
+        """특정 유저가 해당 문제를 맞춘 기록 반환"""
+        return self.col.find_one(
+            {
+                'userId': user_id,
+                'problemId': pro_id,
+                'result': True
+            }
+        )
+
+
     def get_latest_solve_log_by_problem_id(self, user_id: str, pro_id: str):
         """특정 문제에서 유저가 가장 최근에 제출한 기록 반환"""
         return list(self.col.find(
