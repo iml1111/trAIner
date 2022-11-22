@@ -16,7 +16,7 @@ def get_cold_vulnerable_problems(db: MongoClient, count: int):
     for tier, value in result.items():
         index = get_random_index(
             length=len(value),
-            count=4
+            count=count
         )
         for i in index:
             problem_ids.append(value[i])
@@ -37,7 +37,7 @@ def get_cold_click_problems(db: MongoClient, count: int):
     for tier, value in result.items():
         index = get_random_index(
             length=len(value),
-            count=4
+            count=count
         )
         for i in index:
             problem_ids.append(value[i])
@@ -58,7 +58,7 @@ def get_cold_popular_problems(db: MongoClient, count: int):
     for tier, value in result.items():
         index = get_random_index(
             length=len(value),
-            count=4
+            count=count
         )
         for i in index:
             problem_ids.append(value[i])
@@ -84,7 +84,7 @@ def get_cold_algorithm_problems(db: MongoClient, content: str, count: int):
     topic_predictor = current_app.topic_predictor
     items = topic_predictor.get_similar_items(
         str(problem['problemNumber']),
-        num=count
+        num=count if count >= 30 else 30
     )
     problem_numbers = [int(i[0]) for i in items]
     problems = Problem(db).get_problem_info_with_numbers(
