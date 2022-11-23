@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from typing import List
 import torch
 from controller.exceptions import (
     UserIndexError, ItemIndexError
@@ -134,6 +135,20 @@ class DeepPredictor:
             y = self.model(x)
         return float(y[0][0])
 
+    def predict_multi(self, data: List[List[int]]) -> List[float]:
+        """
+        data = [
+            [1, 1], # user_id, item_id
+            [1, 2],
+            [1, 3],
+            ...
+        ]
+        """
+        with torch.no_grad():
+            x = torch.tensor(data)
+            y = self.model(x)
+        return [float(i[0]) for i in y]
+
 
 if __name__ == '__main__':
     from config import config
@@ -147,3 +162,6 @@ if __name__ == '__main__':
     # (22,597) => 0.000000
     user_id, item_id = 22, 597
     print(predictor.predict(user_id, item_id))
+
+    # 병렬 연산 예제
+    print(predictor.predict_multi([[i, i] for i in range(1000)]))
