@@ -22,6 +22,10 @@ def run_problem(code: str, input_str: str, output_str: str, timeout: int = 10):
         data = execute(code, input_str, timeout)
         process_time = time() - process_time
         process_time = round(process_time * 1000)
+        #escape 문자 제거
+        data = data.replace("\r", "").replace("\n", "")
+        output_str = output_str.replace("\r", "").replace("\n", "")
+
         if data == output_str:
             result = True
             description = "맞았습니다!!"
@@ -34,9 +38,13 @@ def run_problem(code: str, input_str: str, output_str: str, timeout: int = 10):
     except TimeoutExpired:
         result = False
         description = '시간 초과'
+    except Exception as e:
+        result = False
+        description = '알 수 없는 에러'
 
-    print(data.encode('utf-8'))
-    print(output_str.encode('utf-8'))
+    # print(input_str)
+    # print('제출', data)
+    # print('정답', output_str)
     return {
         'result': result,
         'resultInfo': description,

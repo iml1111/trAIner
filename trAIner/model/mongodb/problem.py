@@ -81,6 +81,25 @@ class Problem(Model):
             }
         ))
 
+    
+    def get_random_problems(self, size: int):
+        """랜덤하게 문제 반환"""
+        return list(self.col.aggregate(
+            [
+                {
+                    "$match": {'isHotProblem': True}
+                },
+                {"$sample": {"size": size}},
+                {
+                    "$project": {
+                        "problemId": 1,
+                        "problemNumber": 1,
+                        "level": 1
+                    }
+                }
+            ]
+        ))
+        
 
     def get_problem_info(self, pro_id: str):
         """문제 정보 반환"""

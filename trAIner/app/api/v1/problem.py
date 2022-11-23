@@ -196,7 +196,7 @@ def submit_problem(
                 user_oid=g.user_oid,
                 document={
                     'count': user['count'] + 1,
-                    'isHotUser': True if user['count'] + 1 >= 10 else user['isHotUser']
+                    #'isHotUser': True if user['count'] + 1 >= 10 else user['isHotUser']
                 }
             )
     #SolveLog에 추가

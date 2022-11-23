@@ -71,7 +71,7 @@ def get_hot_vulnerable_problems(db: MongoClient, user_id: str, count: int):
     user = User(db).get_userinfo_simple_with_id(
         user_id=user_id
     )
-    problems = Problem(db).get_all_problems()
+    problems = Problem(db).get_random_problems(size=500)
     predictor = current_app.deep_predictor
 
     _lst = []
