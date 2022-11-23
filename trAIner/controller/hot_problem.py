@@ -74,10 +74,17 @@ def get_hot_vulnerable_problems(db: MongoClient, user_id: str, count: int):
     problems = Problem(db).get_all_problems()
     predictor = current_app.deep_predictor
 
-    items = []
+    _lst = []
+    #예측할 문제들 리스팅
     for p in problems:
-        rate = predictor.predict(user['userNumber'], p['problemNumber'])
-        items.append((p['problemNumber'], rate))
+        _lst.append([user['userNumber'], p['problemNumber']])
+    
+    #한 번에 여러 문제 취약률 예측
+    result = predictor.predict_multi(_lst)
+    
+    items = []
+    for p, r in zip(problems, result):
+        items.append([p['problemNumber'], r])
     #rate 높은 순으로 정렬
     items = sorted(items, key=lambda x: x[1], reverse=True)
 
