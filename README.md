@@ -21,7 +21,7 @@
 ![image](https://user-images.githubusercontent.com/29897277/208677868-4caa9404-536b-4e46-8de1-4fc36fac0112.png)
 - 관련 문헌: [Matrix Factorization Techniques for Recommender Systems](https://datajobs.com/data-science-repo/Recommender-Systems-%5bNetflix%5d.pdf)
 
-문제에 대한 각 사용자의 클릭률을 예측하기 위한 모델로, 특정 임계치를 기준으로 클릭 유무에 대한 True|False를 예측합니다. MF 모델의 최종 학습을 기준으로 한 평가 지표는 아래와 같습니다.
+Matrix Factorization(MF)는 Collaborative Filtering 방법론 중 하나로, 사용자와 아이템 간의 평가 정보를 나타내는 Rating Matrix를 기반으로 User Latent Matrix와 Item Latent Matrix로 분해하는 기법입니다. 이를 통해 문제에 대한 각 사용자에 대하여 특정 임계치를 기준으로 클릭 유무에 대한 True|False를 예측합니다. MF 모델의 최종 학습을 기준으로 한 평가 지표는 아래와 같습니다.
 
 - **Train RMSE Loss: 0.674447**
 - **Test RMSE Loss: 1.0221295**
@@ -39,10 +39,21 @@
 
 - 관련 문헌: [DeepFM:A Factorization-Machine based Neural Network for CTR Prediction](https://arxiv.org/pdf/1703.04247.pdf)
 
+Deep Factorization-Machine(DeepFM)은 2017년에 공개된 딥러닝 기반의 추천 시스템 구현을 위해 제안된 신경망으로 기존에 구글에서 발표했던 Wide & Deep Model의 잦은 Feature Engineering(피쳐 엔지니어링) 대한 단점을 보완하면서 해당 장점을 가져오기 위해 구현된 모델입니다.
 
+트레이너에서 정의한 사용자의 취약점이라는 비교적 복잡한 Feature를 해석하고 예측하기 위해 본 모델을 채택하여 사용하였습니다.
+
+**평가 지표**
+- **Vulnerability Range: 0 ~ 1**
+- **Train RMSE Loss: 2.5728e-05**
+- **Test RMSE Loss: .27526e-05**
 
 ### Word2Vec (Topic Embedding)
+![image](https://user-images.githubusercontent.com/29897277/208681882-7330e06d-76e6-4c80-9d3f-e2b89c0b374b.png)
 
+- 관련 문헌: [Efficient Estimation of Word Representations in Vector Space](https://arxiv.org/pdf/1301.3781.pdf)
+
+워드투벡터는 기존 자연어처리(NLP) 분야에서 One-Hot 벡터와 같은 descrete한 벡터들 사이에서 유사도를 계산하기 위해 만들어진 다양한 방법 중 하나입니다.
 
 ## 서비스 구조도
 ### 전체 구성도
