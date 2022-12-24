@@ -67,10 +67,22 @@ Deep Factorization-Machine(DeepFM)은 2017년에 공개된 딥러닝 기반의 �
 ![image](https://user-images.githubusercontent.com/29897277/209433494-a9ea7c99-1e93-41f9-97f4-cddff8dcc507.png)
 
 
-## 서비스 구조도
-### 전체 구성도 & 백그라운드 사용자 분석 프로세스
+## 프로젝트 구조도
+### 서비스 구성도 & 백그라운드 사용자 분석 프로세스
 ![image](https://user-images.githubusercontent.com/29897277/208671733-5f960cc2-3ee5-4aca-9a1c-bb2b240ca743.png)
 ![image](https://user-images.githubusercontent.com/29897277/208671864-d32c0577-09bf-4aaa-a5d5-599527fd307f.png)
 ### 인프라 구조도
 ![image](https://user-images.githubusercontent.com/29897277/208672140-a0929a2c-f5c1-4539-aafb-6b0ddf872a26.png)
 
+- **Frontend**
+    - React.js
+    - Next.js
+- **AI**
+    - PyTorch
+    - Gensim
+    - numpy, pandas, 등
+- **Backend**
+    - Flask
+    - uWsgi, Nginx
+    - MongoDB
+    - Docker, docker-compose
