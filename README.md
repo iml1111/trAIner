@@ -1,7 +1,9 @@
 
 # trAIner - AI 알고리즘 학습 플랫폼
-2022년 2학기 세종대학교 캡스톤 프로젝트 - trAIner
-![image](https://user-images.githubusercontent.com/29897277/208664623-e24e991e-6693-4f46-b904-4c40571d9980.png)
+**2022년 2학기 세종대학교 캡스톤 프로젝트 - trAIner**
+
+![image](https://user-images.githubusercontent.com/29897277/209434008-f61cc54b-3452-407e-bb9c-41886349e648.png)
+
  **trAIner(트레이너)는** 학습자의 관심도, 취약점 패턴을 분석하여 사용자가 좀 더 효율적으로 학습할 수 있도록 **알고리즘 문제를 추천해주는 AI 기반의 학습 플랫폼**입니다.
 
 ### key points
