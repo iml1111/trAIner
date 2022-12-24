@@ -54,8 +54,8 @@ Deep Factorization-Machine(DeepFM)은 2017년에 공개된 딥러닝 기반의 �
 - **Test RMSE Loss: 2.7526e-05**
 
 ### Word2Vec (Topic Embedding)
-![image](https://user-images.githubusercontent.com/29897277/208681882-7330e06d-76e6-4c80-9d3f-e2b89c0b374b.png)
-
+![model](https://user-images.githubusercontent.com/29897277/209434146-f6564532-c11b-4dd4-85d3-159ec24bc8f5.gif)
+*trAiner Word2Vec model 문제 임베딩 시각화 모형*
 - 관련 문헌: [Efficient Estimation of Word Representations in Vector Space](https://arxiv.org/pdf/1301.3781.pdf)
 
 워드투벡터는 기존 자연어처리(NLP) 분야에서 One-Hot 벡터와 같은 descrete한 벡터들 사이에서 유사도를 계산하기 위해 만들어진 다양한 방법 중 하나입니다. 트레이너는 이러한 기법을 추천 시스템에 적용하여 유사한 알고리즘을 가진 문제들 사이의 관계를 수치화하여 비슷한 유형, 패턴을 가지는 문제들을 추천할 수 있습니다.
