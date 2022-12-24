@@ -58,11 +58,13 @@ Deep Factorization-Machine(DeepFM)은 2017년에 공개된 딥러닝 기반의 �
 
 워드투벡터는 기존 자연어처리(NLP) 분야에서 One-Hot 벡터와 같은 descrete한 벡터들 사이에서 유사도를 계산하기 위해 만들어진 다양한 방법 중 하나입니다. 트레이너는 이러한 기법을 추천 시스템에 적용하여 유사한 알고리즘을 가진 문제들 사이의 관계를 수치화하여 비슷한 유형, 패턴을 가지는 문제들을 추천할 수 있습니다.
 
-# 서비스 구조도
-## 전체 구성도 & 백그라운드 사용자 분석 프로세스
+## 서비스 화면 예시
+
+
+## 서비스 구조도
+### 전체 구성도 & 백그라운드 사용자 분석 프로세스
 ![image](https://user-images.githubusercontent.com/29897277/208671733-5f960cc2-3ee5-4aca-9a1c-bb2b240ca743.png)
-### 사용자 데이터 전처리 및 모델 전이 학습
 ![image](https://user-images.githubusercontent.com/29897277/208671864-d32c0577-09bf-4aaa-a5d5-599527fd307f.png)
-## 인프라 구조도
+### 인프라 구조도
 ![image](https://user-images.githubusercontent.com/29897277/208672140-a0929a2c-f5c1-4539-aafb-6b0ddf872a26.png)
 
