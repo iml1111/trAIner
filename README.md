@@ -74,7 +74,7 @@ Deep Factorization-Machine(DeepFM)은 2017년에 공개된 딥러닝 기반의 �
 ### 인프라 구조도
 ![image](https://user-images.githubusercontent.com/29897277/208672140-a0929a2c-f5c1-4539-aafb-6b0ddf872a26.png)
 
-- **Frontend**
+- [**Frontend**](https://github.com/altmshfkgudtjr/trAIner)
     - React.js
     - Next.js
 - **AI**
