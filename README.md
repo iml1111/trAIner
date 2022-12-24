@@ -15,6 +15,7 @@
 ![image](https://user-images.githubusercontent.com/29897277/208668718-85373146-6d3a-4fac-815e-073d94b78aaa.png)
 
 트레이너는 자연어처리(NLP), Factorization Machine 기반의 딥러닝 기술을 통해 사용자와 알고리즘 문제 사이의 상관관계를 분석합니다. 유저들의 각 문제에 대한 **클릭률(CTR), 취약점(Vulnerability), 관심사(Topic)** 정보를 예측하여 각 사용자들에게 최적의 학습 문제를 추천할 수 있습니다.
+
 ![제목 없음](https://user-images.githubusercontent.com/29897277/208671083-b2fa4cea-bdff-4440-abef-29f83b3e3df6.png)
 
 ## trAIner 추천 시스템
